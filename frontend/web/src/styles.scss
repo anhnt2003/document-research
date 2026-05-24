@@ -1,1 +1,310 @@
-/* You can add global styles to this file, and also import other style files */
+/* ========================================================================
+   document·research — global design system
+   Aesthetic: editorial / archive, light theme by default.
+   ======================================================================== */
+
+/* ---------- design tokens ---------- */
+:root {
+  /* ink (text) — checked against paper-50:
+     ink-900..ink-500 pass AA (≥4.5:1) for normal body text;
+     ink-400 passes AA (≥4.5:1) — safe for small metadata;
+     ink-300 is ornament-only (fails AA, use for decorative glyphs/rules). */
+  --ink-900: #1a1714;
+  --ink-800: #2a221c;
+  --ink-700: #3a332c;
+  --ink-600: #524a40;
+  --ink-500: #5e544a;
+  --ink-400: #756a5d;
+  --ink-300: #a89e8f;
+
+  /* paper (surface) */
+  --paper-50: #faf6ee;
+  --paper-75: #f6f1e6;
+  --paper-100: #f2ecdf;
+  --paper-200: #e8e0cc;
+  --paper-300: #ddd2b8;
+
+  /* hairline rule */
+  --rule: #d4c8b0;
+  --rule-strong: #b8a98a;
+
+  /* accents */
+  --oxblood: #7a1f25;
+  --oxblood-soft: rgba(122, 31, 37, 0.08);
+  --oxblood-hover: #621820;
+  --amber: #b8742a;
+  --amber-soft: rgba(184, 116, 42, 0.16);
+  --moss: #4a6b3f;
+  --moss-soft: rgba(74, 107, 63, 0.14);
+  --rust: #a3492a;
+  --rust-soft: rgba(163, 73, 42, 0.14);
+
+  /* typography */
+  --font-display: "Fraunces", "Newsreader", "Times New Roman", Georgia, serif;
+  --font-body: "Geist", "Söhne", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, Menlo, Consolas,
+    monospace;
+
+  /* type scale (modular 1.25) */
+  --fs-12: 0.75rem;
+  --fs-13: 0.8125rem;
+  --fs-14: 0.875rem;
+  --fs-15: 0.9375rem;
+  --fs-16: 1rem;
+  --fs-18: 1.125rem;
+  --fs-20: 1.25rem;
+  --fs-24: 1.5rem;
+  --fs-30: 1.875rem;
+  --fs-36: 2.25rem;
+  --fs-48: 3rem;
+  --fs-60: 3.75rem;
+  --fs-72: 4.5rem;
+
+  /* spacing scale (4px base) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+  --sp-20: 80px;
+  --sp-24: 96px;
+
+  /* radius (mostly hairline; small radii only) */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-pill: 999px;
+
+  /* shadows (sparingly — used for overlays) */
+  --shadow-sm: 0 1px 0 var(--rule);
+  --shadow-md: 0 8px 24px -8px rgba(26, 23, 20, 0.18),
+    0 1px 0 var(--rule);
+  --shadow-lg: 0 24px 60px -16px rgba(26, 23, 20, 0.28),
+    0 2px 0 var(--rule);
+
+  /* layout */
+  --shell-sidebar: 248px;
+  --shell-topbar: 56px;
+  --content-max: 720px;
+  --content-wide: 1120px;
+
+  /* motion */
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ---------- reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--fs-15);
+  line-height: 1.55;
+  color: var(--ink-900);
+  background: var(--paper-50);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "ss01", "ss02", "cv11";
+  background-image:
+    radial-gradient(circle at 20% 0%, rgba(184, 116, 42, 0.04), transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(122, 31, 37, 0.03), transparent 60%);
+  background-attachment: fixed;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-variation-settings: "opsz" 36, "SOFT" 30;
+  color: var(--ink-900);
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin: 0;
+}
+
+h1 { font-size: var(--fs-48); }
+h2 { font-size: var(--fs-36); }
+h3 { font-size: var(--fs-24); }
+h4 { font-size: var(--fs-20); }
+h5 { font-size: var(--fs-18); }
+h6 { font-size: var(--fs-16); }
+
+p {
+  margin: 0;
+  color: var(--ink-700);
+}
+
+a {
+  color: var(--oxblood);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 160ms var(--ease-out), color 160ms var(--ease-out);
+}
+a:hover { border-bottom-color: var(--oxblood); }
+
+button {
+  font: inherit;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: inherit;
+  padding: 0;
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+ul, ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+mark {
+  background: var(--amber-soft);
+  color: var(--ink-900);
+  padding: 1px 2px;
+  border-radius: var(--radius-xs);
+  font-weight: 500;
+}
+
+::selection {
+  background: var(--oxblood);
+  color: var(--paper-50);
+}
+
+/* ---------- editorial primitives ---------- */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink-500);
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-variation-settings: "opsz" 96, "SOFT" 50;
+  letter-spacing: -0.025em;
+  line-height: 1.02;
+}
+
+.display--italic {
+  font-style: italic;
+  font-variation-settings: "opsz" 96, "SOFT" 80;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--fs-12);
+  letter-spacing: 0.04em;
+  color: var(--ink-500);
+}
+
+.hairline { border-top: 1px solid var(--rule); }
+.hairline-bottom { border-bottom: 1px solid var(--rule); }
+
+.ornament {
+  text-align: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--ink-300);
+  font-size: var(--fs-20);
+  padding: var(--sp-6) 0;
+  position: relative;
+}
+.ornament::before,
+.ornament::after {
+  content: "";
+  display: inline-block;
+  width: 64px;
+  height: 1px;
+  background: var(--rule);
+  vertical-align: middle;
+  margin: 0 var(--sp-4);
+}
+
+/* ---------- focus ring ---------- */
+:focus-visible {
+  outline: 2px solid var(--oxblood);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+/* ---------- scrollbar (subtle) ---------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--rule);
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--paper-50);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--rule-strong);
+}
+
+/* ---------- motion preference ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- stagger reveal helper ---------- */
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal {
+  animation: reveal-up 480ms var(--ease-out) both;
+}
+.reveal-delay-1 { animation-delay: 60ms; }
+.reveal-delay-2 { animation-delay: 120ms; }
+.reveal-delay-3 { animation-delay: 180ms; }
+.reveal-delay-4 { animation-delay: 240ms; }
+.reveal-delay-5 { animation-delay: 300ms; }
+
+/* ---------- CDK overlay base ---------- */
+.cdk-overlay-container { z-index: 1000; }
+.cdk-overlay-dark-backdrop {
+  background: rgba(26, 23, 20, 0.46);
+  backdrop-filter: blur(2px);
+}

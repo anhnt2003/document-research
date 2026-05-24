@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="document·research">
+  <!-- ink card -->
+  <rect width="32" height="32" rx="4" fill="#1a1714"/>
+  <!-- inner hairline frame (book cover feel) -->
+  <rect x="3" y="3" width="26" height="26" rx="2.5" fill="none" stroke="#faf6ee" stroke-opacity="0.22" stroke-width="0.5"/>
+  <!-- italic "d" — Georgia ensures reliable render in favicon contexts -->
+  <text x="13" y="24" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="22" font-style="italic" font-weight="500"
+        fill="#faf6ee">d</text>
+  <!-- signature oxblood dot (· in document·research) -->
+  <circle cx="22" cy="20.5" r="2.2" fill="#7a1f25"/>
+</svg>

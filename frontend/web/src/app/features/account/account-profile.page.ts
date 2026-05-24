@@ -77,8 +77,9 @@ const GROUP_LABELS: Record<string, string> = {
           </form>
         </section>
 
-        <aside class="col-aside">
-          <span class="eyebrow">§ Quyền của bạn</span>
+        <section class="col-aside" aria-labelledby="perm-heading">
+          <span class="eyebrow" aria-hidden="true">§ Quyền của bạn</span>
+          <h3 id="perm-heading" class="aside-title">Quyền của bạn</h3>
           @if (grantedGroups().length === 0) {
             <p class="hint">Đang tải danh sách quyền…</p>
           } @else {
@@ -101,7 +102,7 @@ const GROUP_LABELS: Record<string, string> = {
           <p class="hint">
             Để thay đổi danh sách quyền, hãy liên hệ quản trị viên hoặc xem chi tiết vai trò.
           </p>
-        </aside>
+        </section>
       </div>
     }
   `,
@@ -118,9 +119,19 @@ const GROUP_LABELS: Record<string, string> = {
       }
       .grid {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 280px;
-        gap: 56px;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 40px;
         align-items: flex-start;
+      }
+      .col-main { max-width: 720px; }
+      .col-aside {
+        padding-top: 28px;
+        border-top: 1px solid var(--rule);
+      }
+      .perm-groups {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 28px 32px;
       }
       .avatar-row {
         display: flex;
@@ -161,12 +172,15 @@ const GROUP_LABELS: Record<string, string> = {
         letter-spacing: 0.2em;
         color: var(--ink-500);
         display: block;
-        margin-bottom: 16px;
+        margin-bottom: 4px;
       }
-      .perm-groups {
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
+      .aside-title {
+        font-family: var(--font-display);
+        font-style: italic;
+        font-size: var(--fs-24);
+        font-variation-settings: 'opsz' 36, 'SOFT' 80;
+        color: var(--ink-900);
+        margin: 0 0 22px;
       }
       .perm-group__name {
         display: block;
@@ -202,9 +216,9 @@ const GROUP_LABELS: Record<string, string> = {
         font-style: italic;
         line-height: 1.5;
       }
-      @media (max-width: 880px) {
-        .grid { grid-template-columns: 1fr; }
+      @media (max-width: 720px) {
         .form { grid-template-columns: 1fr; }
+        .avatar-row { flex-direction: column; align-items: flex-start; gap: 14px; }
       }
     `,
   ],

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, computed, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, HostListener, Input, Output, computed, inject, signal, viewChild } from '@angular/core';
 import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map, startWith } from 'rxjs/operators';
@@ -11,6 +11,17 @@ import { UiAvatar } from '../../ui/avatar/avatar';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, UiAvatar],
   template: `
+    <button
+      type="button"
+      class="nav-toggle"
+      [attr.aria-expanded]="navOpen"
+      aria-controls="app-sidebar"
+      aria-label="Mở menu điều hướng"
+      (click)="toggleNav.emit()"
+    >
+      <span aria-hidden="true">{{ navOpen ? '✕' : '☰' }}</span>
+    </button>
+
     <div class="left">
       @if (showCmd()) {
         <form class="cmd" (submit)="onSubmit($event)" role="search">
@@ -73,7 +84,36 @@ import { UiAvatar } from '../../ui/avatar/avatar';
         top: 0;
         z-index: 20;
       }
+      .nav-toggle {
+        display: none;
+        width: 36px;
+        height: 36px;
+        align-items: center;
+        justify-content: center;
+        margin-right: 4px;
+        border: 1px solid var(--rule);
+        border-radius: var(--radius-sm);
+        background: var(--paper-50);
+        color: var(--ink-700);
+        font-size: 16px;
+        line-height: 1;
+        cursor: pointer;
+        transition: background 120ms var(--ease-out), color 120ms var(--ease-out);
+      }
+      .nav-toggle:hover {
+        background: var(--paper-100);
+        color: var(--ink-900);
+      }
+      @media (max-width: 960px) {
+        .nav-toggle { display: inline-flex; }
+      }
       .left { flex: 1; max-width: 560px; }
+      @media (max-width: 720px) {
+        .left { max-width: none; }
+        .cmd__kbd { display: none; }
+        .date { display: none; }
+        .user__name { display: none; }
+      }
       .cmd {
         display: flex;
         align-items: center;
@@ -183,6 +223,9 @@ import { UiAvatar } from '../../ui/avatar/avatar';
 export class Topbar {
   auth = inject(AuthStore);
   private router = inject(Router);
+
+  @Input() navOpen = false;
+  @Output() toggleNav = new EventEmitter<void>();
 
   today = (() => {
     const d = new Date();

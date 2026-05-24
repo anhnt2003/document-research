@@ -72,7 +72,7 @@ type View = 'table' | 'grid';
         <option value="title">Tên A → Z</option>
       </select>
       <span class="spacer"></span>
-      <div class="view-toggle" role="tablist">
+      <div class="view-toggle" role="tablist" [class.is-locked]="isNarrow()">
         <button
           type="button"
           [class.is-active]="view() === 'table'"
@@ -95,7 +95,7 @@ type View = 'table' | 'grid';
         description="Thử bỏ bộ lọc hoặc tải lên tài liệu mới."
       />
     } @else {
-      @if (view() === 'table') {
+      @if (effectiveView() === 'table') {
         <table class="table">
           <thead>
             <tr>
@@ -195,6 +195,7 @@ type View = 'table' | 'grid';
         border-radius: var(--radius-sm);
         overflow: hidden;
       }
+      .view-toggle.is-locked { display: none; }
       .view-toggle button {
         padding: 8px 12px;
         font-size: var(--fs-13);
@@ -328,6 +329,31 @@ type View = 'table' | 'grid';
         color: var(--ink-500);
       }
       .dot { color: var(--ink-300); }
+
+      @media (max-width: 1100px) {
+        .table thead th:nth-child(5),
+        .table tbody td:nth-child(5),
+        .table thead th:nth-child(7),
+        .table tbody td:nth-child(7) {
+          display: none;
+        }
+      }
+      @media (max-width: 880px) {
+        .table thead th:nth-child(3),
+        .table tbody td:nth-child(3),
+        .table thead th:nth-child(4),
+        .table tbody td:nth-child(4) {
+          display: none;
+        }
+        .snippet { -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+      }
+      @media (max-width: 720px) {
+        .bar { gap: 8px; }
+        .search { min-width: 0; flex-basis: 100%; }
+        .select { flex: 1; min-width: 0; }
+        .grid { grid-template-columns: 1fr; gap: 12px; }
+        .card { padding: 18px; }
+      }
     `,
   ],
 })
@@ -339,11 +365,22 @@ export class DocumentListPage implements OnInit {
   tags = signal<Tag[]>([]);
   loading = signal(true);
   view = signal<View>('table');
+  isNarrow = signal(false);
+  effectiveView = computed<View>(() => (this.isNarrow() ? 'grid' : this.view()));
   q = '';
   typeFilter = '';
   tagFilter = '';
   sort: 'updatedAt' | 'uploadedAt' | 'title' = 'updatedAt';
   tagMap = computed(() => new Map(this.tags().map((t) => [t.id, t.label])));
+
+  constructor() {
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      const mq = window.matchMedia('(max-width: 720px)');
+      const sync = () => this.isNarrow.set(mq.matches);
+      sync();
+      mq.addEventListener('change', sync);
+    }
+  }
 
   async ngOnInit() {
     this.tags.set(await this.svc.tags());

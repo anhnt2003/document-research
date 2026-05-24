@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthStore } from '../../../core/auth/auth.store';
 
@@ -20,6 +20,11 @@ interface NavGroup {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterLink, RouterLinkActive],
+  host: {
+    id: 'app-sidebar',
+    '[class.is-open]': 'open',
+    '[attr.aria-hidden]': 'isMobileHidden()',
+  },
   template: `
     <div class="brand">
       <a routerLink="/search" class="brand__link">
@@ -32,11 +37,11 @@ interface NavGroup {
       <span class="brand__version">v0.1 · α</span>
     </div>
 
-    <nav class="nav">
+    <nav class="nav" aria-label="Điều hướng chính">
       @for (group of visibleGroups(); track group.eyebrow) {
-        <section class="group">
-          <header class="group__header">
-            <span class="group__num">{{ group.number }}</span>
+        <section class="group" [attr.aria-labelledby]="'navgroup-' + group.number">
+          <header class="group__header" [id]="'navgroup-' + group.number">
+            <span class="group__num" aria-hidden="true">{{ group.number }}</span>
             <span class="group__eyebrow">{{ group.eyebrow }}</span>
           </header>
           <ul>
@@ -45,6 +50,7 @@ interface NavGroup {
                 <a
                   [routerLink]="item.path"
                   routerLinkActive="is-active"
+                  ariaCurrentWhenActive="page"
                   [routerLinkActiveOptions]="{ exact: false }"
                 >
                   <span class="icon" aria-hidden="true">{{ item.icon }}</span>
@@ -214,16 +220,28 @@ interface NavGroup {
         :host {
           position: fixed;
           z-index: 50;
+          top: 0;
+          left: 0;
+          width: min(320px, 86vw);
           transform: translateX(-100%);
-          transition: transform 200ms var(--ease-out);
+          transition: transform 220ms var(--ease-out);
+          box-shadow: var(--shadow-md);
         }
-        :host([open]) { transform: translateX(0); }
+        :host(.is-open) { transform: translateX(0); }
       }
     `,
   ],
 })
 export class Sidebar {
   private auth = inject(AuthStore);
+
+  @Input() open = false;
+
+  isMobileHidden() {
+    if (typeof window === 'undefined') return null;
+    if (window.matchMedia('(max-width: 960px)').matches && !this.open) return 'true';
+    return null;
+  }
 
   private groups: NavGroup[] = [
     {

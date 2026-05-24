@@ -27,22 +27,53 @@ interface UploadingFile {
       description="Kéo–thả nhiều tệp cùng lúc. Các định dạng được hỗ trợ: PDF, DOCX, MD, TXT, hình ảnh."
     />
 
-    <div
-      class="zone"
-      [class.is-hover]="hovering()"
-      (dragover)="onDragOver($event)"
-      (dragleave)="onDragLeave($event)"
-      (drop)="onDrop($event)"
-    >
-      <div class="zone__glyph">↥</div>
-      <h2 class="zone__title">
-        Kéo tệp vào đây <em>hoặc</em>
-      </h2>
-      <label class="zone__btn">
-        <input type="file" multiple (change)="onFileInput($event)" hidden />
-        <span>Chọn tệp từ máy</span>
-      </label>
-      <p class="zone__hint mono">Hỗ trợ đa tệp · tối đa 50MB/tệp</p>
+    <div class="layout">
+      <div
+        class="zone"
+        [class.is-hover]="hovering()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
+      >
+        <div class="zone__glyph">↥</div>
+        <h2 class="zone__title">
+          Kéo tệp vào đây <em>hoặc</em>
+        </h2>
+        <label class="zone__btn">
+          <input type="file" multiple (change)="onFileInput($event)" hidden />
+          <span>Chọn tệp từ máy</span>
+        </label>
+        <p class="zone__hint mono">Hỗ trợ đa tệp · tối đa 50MB/tệp</p>
+      </div>
+
+      <aside class="aside">
+        <section class="aside__block">
+          <span class="aside__eyebrow mono">§ Định dạng</span>
+          <ul class="formats">
+            <li><span class="formats__ext mono">PDF</span><span>Báo cáo, luận văn, sách</span></li>
+            <li><span class="formats__ext mono">DOCX</span><span>Bản thảo có cấu trúc heading</span></li>
+            <li><span class="formats__ext mono">MD</span><span>Ghi chú &amp; tài liệu kỹ thuật</span></li>
+            <li><span class="formats__ext mono">TXT</span><span>Văn bản thuần</span></li>
+            <li><span class="formats__ext mono">IMG</span><span>JPG / PNG — sẽ chạy OCR</span></li>
+          </ul>
+        </section>
+
+        <section class="aside__block">
+          <span class="aside__eyebrow mono">§ Mẹo đặt tên</span>
+          <ol class="tips">
+            <li>Bắt đầu bằng <em>chủ đề</em> chứ không phải năm — dễ tìm về sau.</li>
+            <li>Tránh ký tự đặc biệt; dấu tiếng Việt thì OK.</li>
+            <li>Gắn tag ngay khi tải lên để tích hợp vào taxonomy.</li>
+          </ol>
+        </section>
+
+        <section class="aside__block aside__block--quiet">
+          <span class="aside__eyebrow mono">§ Sau khi tải lên</span>
+          <p class="aside__copy">
+            Hệ thống sẽ trích xuất văn bản, tạo embedding ngữ nghĩa và đưa vào chỉ mục tra cứu trong khoảng 30 giây cho mỗi tệp.
+          </p>
+        </section>
+      </aside>
     </div>
 
     @if (files().length) {
@@ -87,6 +118,66 @@ interface UploadingFile {
   styles: [
     `
       :host { display: block; padding-top: 8px; }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 280px;
+        gap: 40px;
+        align-items: flex-start;
+      }
+      .aside {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+      .aside__block { display: flex; flex-direction: column; gap: 10px; }
+      .aside__block--quiet { color: var(--ink-500); }
+      .aside__eyebrow {
+        font-size: var(--fs-12);
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: var(--ink-500);
+      }
+      .formats {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .formats li {
+        display: grid;
+        grid-template-columns: 56px 1fr;
+        gap: 12px;
+        align-items: baseline;
+        padding: 6px 0;
+        border-bottom: 1px dotted var(--rule);
+        font-size: var(--fs-13);
+        color: var(--ink-700);
+      }
+      .formats li:last-child { border-bottom: none; }
+      .formats__ext {
+        color: var(--oxblood);
+        font-size: var(--fs-12);
+        letter-spacing: 0.12em;
+      }
+      .tips {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding-left: 20px;
+        font-size: var(--fs-13);
+        line-height: 1.55;
+        color: var(--ink-700);
+        list-style: decimal;
+      }
+      .tips em { font-style: italic; color: var(--oxblood); }
+      .aside__copy {
+        font-size: var(--fs-13);
+        line-height: 1.6;
+        color: var(--ink-600);
+        font-style: italic;
+      }
+      @media (max-width: 880px) {
+        .layout { grid-template-columns: 1fr; }
+      }
       .zone {
         border: 1.5px dashed var(--amber);
         background:

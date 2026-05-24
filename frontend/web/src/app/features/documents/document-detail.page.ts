@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { DocumentItem, Tag, User } from '../../core/models';
 import { DocumentsService } from './documents.service';
@@ -8,6 +8,7 @@ import { UiTag } from '../../shared/ui/tag/tag';
 import { UiBadge } from '../../shared/ui/badge/badge';
 import { UiAvatar } from '../../shared/ui/avatar/avatar';
 import { UiOrnament } from '../../shared/ui/ornament/ornament';
+import { UiEmptyState } from '../../shared/ui/empty-state/empty-state';
 import { formatBytes, formatDateLong } from '../../core/util/date';
 import { HttpClient } from '@angular/common/http';
 import { API_CONFIG } from '../../core/api/api.config';
@@ -17,7 +18,7 @@ import { firstValueFrom } from 'rxjs';
   selector: 'document-detail-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, UiButton, UiTag, UiBadge, UiAvatar, UiOrnament],
+  imports: [RouterLink, UiButton, UiTag, UiBadge, UiAvatar, UiOrnament, UiEmptyState],
   template: `
     @if (doc(); as d) {
       <article class="page reveal">
@@ -126,7 +127,18 @@ import { firstValueFrom } from 'rxjs';
     } @else if (loading()) {
       <p class="loading mono">đang tải…</p>
     } @else {
-      <p class="loading">Không tìm thấy tài liệu.</p>
+      <ui-empty-state
+        glyph="✺"
+        title="Không tìm thấy tài liệu"
+        description="Tài liệu có thể đã bị gỡ, đổi vị trí, hoặc bạn nhập sai mã thư viện. Quay lại kho lưu trữ để tiếp tục tra cứu."
+      >
+        <a routerLink="/documents">
+          <button ui-button>Về kho tài liệu</button>
+        </a>
+        <a routerLink="/search">
+          <button ui-button variant="outline">Tra cứu</button>
+        </a>
+      </ui-empty-state>
     }
   `,
   styles: [
@@ -310,7 +322,6 @@ import { firstValueFrom } from 'rxjs';
 export class DocumentDetailPage implements OnInit {
   private svc = inject(DocumentsService);
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
   private http = inject(HttpClient);
   private config = inject(API_CONFIG);
 

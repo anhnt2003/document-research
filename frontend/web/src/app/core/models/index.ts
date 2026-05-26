@@ -9,24 +9,19 @@ export interface User {
   id: string;
   email: string;
   displayName: string;
-  avatarColor: string; // deterministic accent for avatar
-  initials: string;
-  locale: 'vi' | 'en';
+  avatarUrl: string | null;
   status: UserStatus;
   roleIds: string[];
-  title?: string;
-  department?: string;
   createdAt: Iso;
-  lastLoginAt?: Iso;
+  lastLoginAt: Iso | null;
 }
 
 export interface Role {
   id: string;
   name: string;
-  description: string;
-  permissionKeys: string[];
+  description: string | null;
   isSystem: boolean;
-  memberCount: number;
+  permissionKeys: string[];
 }
 
 export interface Permission {
@@ -46,7 +41,7 @@ export interface Tag {
 
 export interface DocumentItem {
   id: string;
-  signature: string; // DOC-XXXX
+  signature: string;
   title: string;
   summary: string;
   body?: string;
@@ -63,9 +58,16 @@ export interface DocumentItem {
   language?: 'vi' | 'en';
 }
 
+export interface DocumentDto {
+  id: string;
+  title: string;
+  body: string;
+  createdAt: Iso;
+}
+
 export interface SearchHighlight {
   field: 'title' | 'summary' | 'body';
-  snippet: string; // contains <mark> tags
+  snippet: string;
 }
 
 export interface SearchResult {
@@ -107,15 +109,17 @@ export interface ActivityEvent {
   at: Iso;
 }
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
+export interface SignInResponse {
   token: string;
+  expiresAt: Iso;
   user: User;
   roles: Role[];
+}
+
+export interface MeResponse {
+  user: User;
+  roles: Role[];
+  permissionKeys: string[];
 }
 
 export interface Page<T> {

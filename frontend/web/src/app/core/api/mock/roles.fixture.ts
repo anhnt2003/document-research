@@ -10,7 +10,6 @@ export const ROLES: Role[] = [
     description: 'Toàn quyền quản trị hệ thống, người dùng và tài liệu.',
     permissionKeys: allKeys,
     isSystem: true,
-    memberCount: 2,
   },
   {
     id: 'role-editor',
@@ -26,7 +25,6 @@ export const ROLES: Role[] = [
       'permission.view',
     ],
     isSystem: true,
-    memberCount: 4,
   },
   {
     id: 'role-viewer',
@@ -34,7 +32,6 @@ export const ROLES: Role[] = [
     description: 'Chỉ đọc tài liệu, tìm kiếm và xem lịch sử cá nhân.',
     permissionKeys: ['document.read', 'search.execute', 'search.history.view'],
     isSystem: true,
-    memberCount: 12,
   },
   {
     id: 'role-librarian',
@@ -50,6 +47,5 @@ export const ROLES: Role[] = [
       'permission.view',
     ],
     isSystem: false,
-    memberCount: 3,
   },
 ];

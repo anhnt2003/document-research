@@ -60,12 +60,6 @@ import { formatDateLong } from '../../../core/util/date';
             <ui-field label="Email">
               <input ui-input [(ngModel)]="form.email" name="email" type="email" />
             </ui-field>
-            <ui-field label="Chức danh">
-              <input ui-input [(ngModel)]="form.title" name="title" />
-            </ui-field>
-            <ui-field label="Đơn vị">
-              <input ui-input [(ngModel)]="form.department" name="department" />
-            </ui-field>
           </form>
 
           <section class="roles">
@@ -230,8 +224,6 @@ export class UserDetailPage implements OnInit {
   form: Partial<User> & { roleIds: string[] } = {
     displayName: '',
     email: '',
-    title: '',
-    department: '',
     roleIds: [],
   };
 
@@ -252,8 +244,6 @@ export class UserDetailPage implements OnInit {
       this.form = {
         displayName: u.displayName,
         email: u.email,
-        title: u.title,
-        department: u.department,
         roleIds: [...u.roleIds],
       };
     } finally {

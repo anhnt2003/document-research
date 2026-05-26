@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 import { API_CONFIG } from '../../core/api/api.config';
-import { DocumentItem, Page, Tag } from '../../core/models';
+import { DocumentDto, DocumentItem, Page, Tag } from '../../core/models';
 
 export interface DocumentQuery {
   q?: string;
@@ -31,9 +31,9 @@ export class DocumentsService {
     );
   }
 
-  async get(id: string): Promise<DocumentItem> {
+  async get(id: string): Promise<DocumentDto> {
     return firstValueFrom(
-      this.http.get<DocumentItem>(`${this.config.baseUrl}/documents/${id}`)
+      this.http.get<DocumentDto>(`${this.config.baseUrl}/documents/${id}`)
     );
   }
 

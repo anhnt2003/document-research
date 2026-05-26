@@ -3,14 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 import { API_CONFIG } from '../api/api.config';
-import { LoginResponse, Role, User } from '../models';
+import { Iso, MeResponse, Role, SignInResponse, User } from '../models';
 
 const STORAGE_KEY = 'docres.session';
 
 interface Session {
   token: string;
+  expiresAt: Iso;
   user: User;
   roles: Role[];
+  permissionKeys: string[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -24,37 +26,51 @@ export class AuthStore {
   readonly roles = computed(() => this.session()?.roles ?? []);
   readonly token = computed(() => this.session()?.token ?? null);
   readonly isAuthenticated = computed(() => !!this.session());
-  readonly permissions = computed(() =>
-    new Set(this.roles().flatMap((r) => r.permissionKeys))
-  );
-  readonly isAdmin = computed(() =>
-    this.roles().some((r) => r.id === 'role-admin')
-  );
+  readonly permissions = computed(() => new Set(this.session()?.permissionKeys ?? []));
+  readonly isAdmin = computed(() => this.roles().some((r) => r.id === 'role-admin'));
 
-  async login(email: string, password: string): Promise<void> {
+  async signInWithGoogle(idToken: string): Promise<void> {
     const resp = await firstValueFrom(
-      this.http.post<LoginResponse>(`${this.config.baseUrl}/auth/login`, {
-        email,
-        password,
+      this.http.post<SignInResponse>(`${this.config.baseUrl}/auth/google`, { idToken })
+    );
+    const me = await firstValueFrom(
+      this.http.get<MeResponse>(`${this.config.baseUrl}/auth/me`, {
+        headers: { Authorization: `Bearer ${resp.token}` },
       })
     );
     const session: Session = {
       token: resp.token,
-      user: resp.user,
-      roles: resp.roles,
+      expiresAt: resp.expiresAt,
+      user: me.user,
+      roles: me.roles,
+      permissionKeys: me.permissionKeys,
     };
     this.session.set(session);
     this.persist(session);
   }
 
-  async logout(): Promise<void> {
+  async refreshMe(): Promise<void> {
+    const current = this.session();
+    if (!current) return;
     try {
-      await firstValueFrom(
-        this.http.post(`${this.config.baseUrl}/auth/logout`, {})
+      const me = await firstValueFrom(
+        this.http.get<MeResponse>(`${this.config.baseUrl}/auth/me`)
       );
+      const updated: Session = {
+        ...current,
+        user: me.user,
+        roles: me.roles,
+        permissionKeys: me.permissionKeys,
+      };
+      this.session.set(updated);
+      this.persist(updated);
     } catch {
-      /* ignore */
+      this.session.set(null);
+      localStorage.removeItem(STORAGE_KEY);
     }
+  }
+
+  logout(): void {
     this.session.set(null);
     localStorage.removeItem(STORAGE_KEY);
   }

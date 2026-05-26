@@ -12,7 +12,6 @@ import { delay } from 'rxjs/operators';
 import { API_CONFIG } from '../api.config';
 import {
   DocumentItem,
-  LoginResponse,
   Page,
   Role,
   SearchQuery,
@@ -136,43 +135,10 @@ export const mockInterceptor: HttpInterceptorFn = (
   const path = url.slice(config.baseUrl.length);
   const method = req.method.toUpperCase();
 
-  // --- AUTH ---
-  if (path === '/auth/login' && method === 'POST') {
-    const body = req.body as { email: string; password: string };
-    const user = users.find((u) => u.email.toLowerCase() === body.email.toLowerCase()) ?? users[0];
-    if (!user) {
-      return throwError(() => ({ status: 401, message: 'Sai email hoặc mật khẩu.' })).pipe(delay(220));
-    }
-    if (user.status === 'locked') {
-      return throwError(() => ({ status: 403, message: 'Tài khoản đã bị khóa.' })).pipe(delay(220));
-    }
-    const userRoles = roles.filter((r) => user.roleIds.includes(r.id));
-    const resp: LoginResponse = {
-      token: btoa(`${user.id}:${Date.now()}`),
-      user,
-      roles: userRoles,
-    };
-    return jsonOk(resp, 280);
-  }
-
-  if (path === '/auth/me' && method === 'GET') {
-    const user = users.find((u) => u.id === CURRENT_USER_ID)!;
-    const userRoles = roles.filter((r) => user.roleIds.includes(r.id));
-    return jsonOk({ user, roles: userRoles }, 80);
-  }
-
-  if (path === '/auth/logout' && method === 'POST') {
-    return jsonOk({ ok: true }, 60);
-  }
-
   // --- DOCUMENTS ---
+  // GET /documents/{id} is served by the real backend; all other document operations stay mock.
   if (path.startsWith('/documents')) {
     const idMatch = matchUrl(path, /^\/documents\/([^/?]+)$/);
-    if (idMatch && method === 'GET') {
-      const d = documents.find((x) => x.id === idMatch[1]);
-      if (!d) return throwError(() => ({ status: 404 })).pipe(delay(120));
-      return jsonOk(d, 180);
-    }
     if (idMatch && method === 'PATCH') {
       const patch = req.body as Partial<DocumentItem>;
       documents = documents.map((d) =>
@@ -297,14 +263,11 @@ export const mockInterceptor: HttpInterceptorFn = (
       id: `u-${Date.now()}`,
       email: body.email ?? '',
       displayName: body.displayName ?? '',
-      initials: 'NM',
-      avatarColor: '#7A1F25',
-      locale: 'vi',
+      avatarUrl: null,
       status: 'invited',
       roleIds: body.roleIds ?? ['role-viewer'],
-      title: body.title,
-      department: body.department,
       createdAt: new Date().toISOString(),
+      lastLoginAt: null,
     };
     users = [...users, created];
     return jsonOk(created, 220);

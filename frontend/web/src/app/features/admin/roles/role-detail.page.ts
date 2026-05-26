@@ -261,7 +261,7 @@ export class RoleDetailPage implements OnInit {
       this.allPermissions.set(perms);
       this.form = {
         name: role.name,
-        description: role.description,
+        description: role.description ?? '',
         permissionKeys: [...role.permissionKeys],
       };
     } finally {

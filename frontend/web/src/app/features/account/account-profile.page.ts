@@ -62,18 +62,6 @@ const GROUP_LABELS: Record<string, string> = {
             <ui-field label="Email" hint="Đăng nhập và nhận thông báo">
               <input ui-input type="email" name="email" [ngModel]="user.email" />
             </ui-field>
-            <ui-field label="Chức danh">
-              <input ui-input type="text" name="title" [ngModel]="user.title" />
-            </ui-field>
-            <ui-field label="Khoa / phòng ban">
-              <input ui-input type="text" name="department" [ngModel]="user.department" />
-            </ui-field>
-            <ui-field label="Ngôn ngữ" hint="Ảnh hưởng đến UI và format ngày">
-              <select [ngModel]="user.locale" name="locale" class="select">
-                <option value="vi">Tiếng Việt</option>
-                <option value="en">English</option>
-              </select>
-            </ui-field>
           </form>
         </section>
 

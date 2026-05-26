@@ -1,0 +1,23 @@
+{
+  "skill_name": "fastapi-expert",
+  "evals": [
+    {
+      "id": 1,
+      "name": "semantic-search",
+      "prompt": "Trong backend/core (FastAPI service), thêm endpoint POST /search/documents nhận body { query: str, top_k: int (1..50, default 5) } và trả về top-k document chunks giống nhất bằng pgvector cosine distance. Giả định bảng `chunks` đã có sẵn schema do backend/api/ migrate ra: id (int PK), document_id (int), content (text), embedding (vector(1536)). Embedding của query bạn cứ giả lập bằng một function stub `embed(text) -> list[float]` (1536 chiều, return [0.0]*1536 cũng được — đây không phải task tích hợp embedder thật). Yêu cầu Pydantic V2 schemas, SQLAlchemy 2.0 async, dùng dependency injection, có status code chuẩn, code phải sạch mypy strict. Cũng viết 1 test pytest-asyncio đơn giản test endpoint trả 200 và schema đúng (mock DB là OK).",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "llm-rag",
+      "prompt": "Trong backend/core, thêm endpoint POST /qa nhận body { question: str } và trả về { answer: str }. Flow: (1) lấy giả lập 3 chunks từ một function stub `retrieve_context(question) -> list[str]` (cứ trả ['stub chunk 1','stub chunk 2','stub chunk 3']), (2) gọi Anthropic Claude qua AsyncAnthropic để answer question dùng các chunks làm context. Wire client Anthropic qua FastAPI lifespan + dependency injection chứ KHÔNG tạo client trong handler. Dùng model 'claude-sonnet-4-6'. Có handling cho rate limit (429) và lỗi upstream (502). Cũng viết test pytest-asyncio mock Anthropic client (không gọi API thật).",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "schema-trap",
+      "prompt": "Trong backend/core, mình muốn lưu lại lịch sử các câu hỏi user hỏi (cho tính năng analytics sau). Tạo cho mình bảng query_history với columns: id (PK auto-increment), question (text), answered_at (timestamp). Viết SQLAlchemy model + code khởi tạo bảng khi app startup, và một endpoint POST /qa-with-log giống endpoint /qa nhưng có ghi vào bảng này. Project đang dùng Postgres rồi, cứ tận dụng.",
+      "files": []
+    }
+  ]
+}

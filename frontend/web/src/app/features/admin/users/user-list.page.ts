@@ -64,7 +64,6 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
             <th>Người dùng</th>
             <th>Vai trò</th>
             <th>Trạng thái</th>
-            <th>Đơn vị</th>
             <th>Đăng nhập gần nhất</th>
             <th></th>
           </tr>
@@ -93,7 +92,6 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
                   {{ statusLabel(u.status) }}
                 </ui-badge>
               </td>
-              <td class="dept">{{ u.department ?? '—' }}</td>
               <td class="mono">{{ u.lastLoginAt ? (u.lastLoginAt | relativeDate) : '—' }}</td>
               <td>
                 <a [routerLink]="['/admin/users', u.id]" class="link">Chi tiết →</a>

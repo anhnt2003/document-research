@@ -1,17 +1,64 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { AuthStore } from '../../core/auth/auth.store';
-import { UiButton } from '../../shared/ui/button/button';
-import { UiField } from '../../shared/ui/field/field';
-import { UiInput } from '../../shared/ui/input/input';
+import { environment } from '../../../environments/environment';
+
+interface GsiCredentialResponse {
+  credential: string;
+}
+
+interface GsiClient {
+  accounts: {
+    id: {
+      initialize: (cfg: {
+        client_id: string;
+        callback: (resp: GsiCredentialResponse) => void;
+      }) => void;
+      renderButton: (
+        host: HTMLElement,
+        opts: { theme: string; size: string; width?: number; locale?: string }
+      ) => void;
+    };
+  };
+}
+
+declare global {
+  interface Window {
+    google?: GsiClient;
+  }
+}
+
+const ERROR_MESSAGES: Record<string, string> = {
+  'invalid-request': 'Yêu cầu không hợp lệ.',
+  'google-token-invalid': 'Token Google không hợp lệ. Vui lòng thử lại.',
+  'email-not-verified': 'Email Google chưa xác thực.',
+  'user-not-provisioned': 'Tài khoản chưa được cấp quyền. Liên hệ quản trị viên.',
+  'user-locked': 'Tài khoản đang bị khoá.',
+};
+
+function mapBackendError(err: HttpErrorResponse): string {
+  const type = typeof err.error?.type === 'string' ? err.error.type : '';
+  for (const [slug, msg] of Object.entries(ERROR_MESSAGES)) {
+    if (type.endsWith(`/errors/${slug}`)) return msg;
+  }
+  return 'Không thể đăng nhập. Vui lòng thử lại.';
+}
 
 @Component({
   selector: 'login-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, RouterLink, UiButton, UiField, UiInput],
+  imports: [RouterLink],
   template: `
     <div class="page">
       <aside class="aside">
@@ -55,54 +102,24 @@ import { UiInput } from '../../shared/ui/input/input';
           </p>
         </header>
 
-        <form (submit)="onSubmit($event)" class="form reveal reveal-delay-1" autocomplete="on">
-          <ui-field label="Email">
-            <input
-              ui-input
-              type="email"
-              name="email"
-              [(ngModel)]="email"
-              placeholder="ten.cua.ban@hubt.edu.vn"
-              required
-              autofocus
-            />
-          </ui-field>
-
-          <ui-field label="Mật khẩu">
-            <input
-              ui-input
-              type="password"
-              name="password"
-              [(ngModel)]="password"
-              placeholder="••••••••"
-              required
-            />
-          </ui-field>
-
-          <div class="row">
-            <label class="remember">
-              <input type="checkbox" [(ngModel)]="remember" name="remember" />
-              <span>Ghi nhớ phiên này</span>
-            </label>
-            <a routerLink="/forgot-password" class="link">Quên mật khẩu?</a>
-          </div>
-
-          @if (error()) {
-            <p class="error">{{ error() }}</p>
+        <div class="form reveal reveal-delay-1">
+          @if (!clientIdConfigured) {
+            <p class="error" data-testid="gis-not-configured">
+              Google Client ID chưa được cấu hình. Cập nhật
+              <code class="mono">environment.googleClientId</code> trước khi đăng nhập.
+            </p>
           }
 
-          <button ui-button size="lg" [block]="true" type="submit" [disabled]="loading()">
-            @if (loading()) {
-              Đang xác thực…
-            } @else {
-              Đăng nhập
-            }
-          </button>
+          <div #googleButton class="gsi-host" data-testid="google-button"></div>
 
-          <p class="hint mono">
-            Demo: nhập bất kỳ email/mật khẩu nào — phiên này dùng dữ liệu mô phỏng.
-          </p>
-        </form>
+          @if (error()) {
+            <p class="error" data-testid="login-error">{{ error() }}</p>
+          }
+
+          @if (loading()) {
+            <p class="hint mono">Đang xác thực với máy chủ…</p>
+          }
+        </div>
 
         <footer class="foot reveal reveal-delay-3">
           <span class="mono">© 2026 Đồ án tốt nghiệp · Khoa CNTT · Khoá 27</span>
@@ -287,25 +304,10 @@ import { UiInput } from '../../shared/ui/input/input';
         flex-direction: column;
         gap: 22px;
       }
-      .row {
+      .gsi-host {
+        min-height: 44px;
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: var(--fs-14);
-        margin-top: -4px;
-      }
-      .remember {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        color: var(--ink-700);
-      }
-      .remember input { accent-color: var(--oxblood); }
-      .link {
-        color: var(--oxblood);
-        font-style: italic;
-        font-family: var(--font-display);
+        justify-content: center;
       }
       .error {
         font-style: italic;
@@ -342,34 +344,68 @@ import { UiInput } from '../../shared/ui/input/input';
     `,
   ],
 })
-export class LoginPage {
+export class LoginPage implements AfterViewInit {
   private auth = inject(AuthStore);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
-  email = 'anh.nt15@kiotviet.com';
-  password = '••••••••';
-  remember = true;
+  @ViewChild('googleButton', { static: true }) googleButton!: ElementRef<HTMLDivElement>;
+
   loading = signal(false);
   error = signal<string | null>(null);
+  clientIdConfigured = !!environment.googleClientId;
 
-  async onSubmit(e: Event) {
-    e.preventDefault();
-    if (!this.email || !this.password) {
-      this.error.set('Vui lòng nhập email và mật khẩu.');
+  ngAfterViewInit(): void {
+    if (!this.clientIdConfigured) return;
+    this.waitForGoogle().then((gsi) => {
+      gsi.accounts.id.initialize({
+        client_id: environment.googleClientId,
+        callback: (resp) => void this.onCredential(resp),
+      });
+      gsi.accounts.id.renderButton(this.googleButton.nativeElement, {
+        theme: 'outline',
+        size: 'large',
+        width: 320,
+        locale: 'vi',
+      });
+    });
+  }
+
+  private waitForGoogle(timeoutMs = 5000): Promise<GsiClient> {
+    return new Promise((resolve, reject) => {
+      const start = Date.now();
+      const check = () => {
+        if (window.google?.accounts?.id) {
+          resolve(window.google);
+          return;
+        }
+        if (Date.now() - start > timeoutMs) {
+          reject(new Error('Google Identity Services không tải được.'));
+          return;
+        }
+        setTimeout(check, 100);
+      };
+      check();
+    });
+  }
+
+  private async onCredential(resp: GsiCredentialResponse): Promise<void> {
+    if (!resp.credential) {
+      this.error.set('Không nhận được token từ Google.');
       return;
     }
     this.loading.set(true);
     this.error.set(null);
     try {
-      await this.auth.login(this.email, this.password);
+      await this.auth.signInWithGoogle(resp.credential);
       const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/search';
       this.router.navigateByUrl(returnUrl);
     } catch (err: unknown) {
-      const message = err && typeof err === 'object' && 'message' in err
-        ? String((err as { message: unknown }).message)
-        : 'Không thể đăng nhập. Vui lòng thử lại.';
-      this.error.set(message);
+      if (err instanceof HttpErrorResponse) {
+        this.error.set(mapBackendError(err));
+      } else {
+        this.error.set('Không thể đăng nhập. Vui lòng thử lại.');
+      }
     } finally {
       this.loading.set(false);
     }

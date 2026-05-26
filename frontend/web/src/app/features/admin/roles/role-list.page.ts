@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { Role } from '../../../core/models';
+import { Role, User } from '../../../core/models';
 import { AdminService } from '../admin.service';
 import { UiPageHeader } from '../../../shared/ui/page-header/page-header';
 import { UiButton } from '../../../shared/ui/button/button';
@@ -42,7 +42,7 @@ import { UiBadge } from '../../../shared/ui/badge/badge';
             </header>
             <p class="desc">{{ r.description }}</p>
             <footer class="card__foot">
-              <span class="mono">{{ r.memberCount }} thành viên</span>
+              <span class="mono">{{ memberCount(r.id) }} thành viên</span>
               <span class="dot">·</span>
               <span class="mono">{{ r.permissionKeys.length }} quyền</span>
               <span class="link">Chi tiết →</span>
@@ -124,13 +124,20 @@ import { UiBadge } from '../../../shared/ui/badge/badge';
 export class RoleListPage implements OnInit {
   private svc = inject(AdminService);
   roles = signal<Role[]>([]);
+  users = signal<User[]>([]);
   loading = signal(true);
 
   async ngOnInit() {
     try {
-      this.roles.set(await this.svc.roles());
+      const [roles, users] = await Promise.all([this.svc.roles(), this.svc.users()]);
+      this.roles.set(roles);
+      this.users.set(users);
     } finally {
       this.loading.set(false);
     }
+  }
+
+  memberCount(roleId: string): number {
+    return this.users().filter((u) => u.roleIds.includes(roleId)).length;
   }
 }

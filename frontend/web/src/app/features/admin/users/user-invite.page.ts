@@ -31,12 +31,6 @@ import { UiInput } from '../../../shared/ui/input/input';
       <ui-field label="Tên hiển thị">
         <input ui-input type="text" [(ngModel)]="displayName" name="displayName" />
       </ui-field>
-      <ui-field label="Chức danh">
-        <input ui-input type="text" [(ngModel)]="title" name="title" />
-      </ui-field>
-      <ui-field label="Đơn vị">
-        <input ui-input type="text" [(ngModel)]="department" name="department" />
-      </ui-field>
       <ui-field label="Vai trò mặc định">
         <select [(ngModel)]="roleId" name="role" class="select">
           @for (r of roles(); track r.id) {
@@ -78,8 +72,6 @@ export class UserInvitePage implements OnInit {
 
   email = '';
   displayName = '';
-  title = '';
-  department = '';
   roleId = 'role-viewer';
   loading = signal(false);
   roles = signal<Role[]>([]);
@@ -96,8 +88,6 @@ export class UserInvitePage implements OnInit {
       await this.svc.createUser({
         email: this.email,
         displayName: this.displayName || this.email.split('@')[0],
-        title: this.title,
-        department: this.department,
         roleIds: [this.roleId],
       });
       this.router.navigateByUrl('/admin/users');

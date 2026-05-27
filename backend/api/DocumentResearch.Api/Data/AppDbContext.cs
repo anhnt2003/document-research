@@ -12,6 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
+    public DbSet<ActivityEvent> ActivityEvents => Set<ActivityEvent>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -47,6 +48,19 @@ public class AppDbContext : DbContext
                 .WithMany(r => r.UserRoles)
                 .HasForeignKey(ur => ur.RoleId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ActivityEvent>(b =>
+        {
+            b.Property(e => e.Action).IsRequired().HasMaxLength(64);
+            b.Property(e => e.Target).HasMaxLength(200);
+            b.Property(e => e.IpAddress).HasMaxLength(45);
+            b.HasOne(e => e.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            b.HasIndex(e => new { e.UserId, e.OccurredAt })
+                .IsDescending(false, true);
         });
     }
 }

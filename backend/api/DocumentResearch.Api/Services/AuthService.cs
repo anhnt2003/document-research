@@ -11,17 +11,20 @@ public sealed class AuthService : IAuthService
     private readonly IJwtIssuer _jwtIssuer;
     private readonly AppDbContext _db;
     private readonly TimeProvider _clock;
+    private readonly IAccountService _account;
 
     public AuthService(
         IGoogleTokenVerifier googleVerifier,
         IJwtIssuer jwtIssuer,
         AppDbContext db,
-        TimeProvider clock)
+        TimeProvider clock,
+        IAccountService account)
     {
         _googleVerifier = googleVerifier;
         _jwtIssuer = jwtIssuer;
         _db = db;
         _clock = clock;
+        _account = account;
     }
 
     public async Task<SignInOutcome> SignInWithGoogleAsync(string? idToken, CancellationToken ct)
@@ -81,6 +84,8 @@ public sealed class AuthService : IAuthService
             user.AvatarUrl = identity.Picture;
         }
         await _db.SaveChangesAsync(ct);
+
+        await _account.LogAsync(user.Id, "sign_in", target: "google", ipAddress: null, ct);
 
         var roles = user.UserRoles.Select(ur => ur.Role).ToList();
         var issued = _jwtIssuer.Issue(user, roles);

@@ -17,10 +17,12 @@ namespace DocumentResearch.Api.Controllers.V1;
 public sealed class AuthController : ControllerBase
 {
     private readonly IAuthService _auth;
+    private readonly IAccountService _account;
 
-    public AuthController(IAuthService auth)
+    public AuthController(IAuthService auth, IAccountService account)
     {
         _auth = auth;
+        _account = account;
     }
 
     [HttpPost("google")]
@@ -72,11 +74,7 @@ public sealed class AuthController : ControllerBase
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<MeResponse>> Me(CancellationToken ct)
     {
-        var subClaim =
-            User.FindFirstValue(JwtRegisteredClaimNames.Sub) ??
-            User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (!Guid.TryParse(subClaim, out var userId))
+        if (!TryGetUserId(out var userId))
         {
             return Problem(
                 type: ErrorTypes.GoogleTokenInvalid,
@@ -96,5 +94,32 @@ public sealed class AuthController : ControllerBase
                 detail: "The account referenced by this token no longer exists."),
             _ => throw new InvalidOperationException($"Unhandled MeOutcome: {result.GetType().Name}"),
         };
+    }
+
+    [HttpPost("sign-out")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> SignOutCurrent(CancellationToken ct)
+    {
+        if (!TryGetUserId(out var userId))
+        {
+            return Problem(
+                type: ErrorTypes.GoogleTokenInvalid,
+                title: "Invalid token",
+                statusCode: StatusCodes.Status401Unauthorized,
+                detail: "Token does not contain a valid subject claim.");
+        }
+
+        var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+        await _account.LogAsync(userId, "sign_out", target: null, ipAddress: ip, ct);
+        return NoContent();
+    }
+
+    private bool TryGetUserId(out Guid userId)
+    {
+        var sub = User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+            ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return Guid.TryParse(sub, out userId);
     }
 }

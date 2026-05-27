@@ -266,7 +266,6 @@ export class Sidebar {
       number: 'III',
       items: [
         { label: 'Hồ sơ', path: '/account/profile', icon: '◐' },
-        { label: 'Bảo mật', path: '/account/security', icon: '⚿' },
         { label: 'Hoạt động', path: '/account/activity', icon: '☷' },
       ],
     },

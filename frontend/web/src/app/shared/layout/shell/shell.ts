@@ -3,12 +3,13 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Sidebar } from '../sidebar/sidebar';
 import { Topbar } from '../topbar/topbar';
+import { UiToastContainer } from '../../ui/toast/toast-container';
 
 @Component({
   selector: 'app-shell',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, Sidebar, Topbar],
+  imports: [RouterOutlet, Sidebar, Topbar, UiToastContainer],
   template: `
     <div class="frame" [class.is-nav-open]="navOpen()">
       <app-sidebar [open]="navOpen()" />
@@ -27,6 +28,7 @@ import { Topbar } from '../topbar/topbar';
           <router-outlet />
         </main>
       </div>
+      <ui-toast-container />
     </div>
   `,
   styles: [

@@ -14,7 +14,6 @@ import { toCamel, toSnake } from './case';
 const MOCK_PATH_PREFIXES = [
   '/auth/login',
   '/auth/logout',
-  '/tags',
   '/search',
   '/users',
   '/roles',
@@ -33,7 +32,12 @@ export function isMockPath(path: string, method: string): boolean {
   if (path === '/documents' || path.startsWith('/documents?')) return true;
   if (path.startsWith('/documents/')) {
     const tail = path.slice('/documents/'.length);
-    if (tail.includes('/')) return true;
+    // /documents/{id}/tags → real backend; other sub-paths still mock.
+    if (tail.includes('/')) {
+      const [, sub] = tail.split('/');
+      if (sub === 'tags') return false;
+      return true;
+    }
     return method.toUpperCase() !== 'GET';
   }
   return false;

@@ -6,4 +6,5 @@ public class Document
     public string Title { get; set; } = string.Empty;
     public string Body { get; set; } = string.Empty;
     public DateTimeOffset CreatedAt { get; set; }
+    public ICollection<DocumentTag> DocumentTags { get; set; } = new List<DocumentTag>();
 }

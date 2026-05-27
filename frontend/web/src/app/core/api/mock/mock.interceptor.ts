@@ -16,7 +16,6 @@ import {
   Role,
   SearchQuery,
   SearchResult,
-  Tag,
   User,
 } from '../../models';
 
@@ -24,7 +23,6 @@ import { DOCUMENTS } from './documents.fixture';
 import { HISTORY } from './history.fixture';
 import { PERMISSIONS } from './permissions.fixture';
 import { ROLES } from './roles.fixture';
-import { TAGS } from './tags.fixture';
 import { USERS, CURRENT_USER_ID } from './users.fixture';
 import { ACTIVITY } from './activity.fixture';
 import { highlight, makeSnippet } from '../../util/highlight';
@@ -194,11 +192,6 @@ export const mockInterceptor: HttpInterceptorFn = (
       documents = [created, ...documents];
       return jsonOk(created, 240);
     }
-  }
-
-  // --- TAGS ---
-  if (path === '/tags' && method === 'GET') {
-    return jsonOk<Tag[]>(TAGS, 120);
   }
 
   // --- SEARCH ---

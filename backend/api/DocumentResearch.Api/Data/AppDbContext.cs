@@ -13,6 +13,8 @@ public class AppDbContext : DbContext
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<ActivityEvent> ActivityEvents => Set<ActivityEvent>();
+    public DbSet<Tag> Tags => Set<Tag>();
+    public DbSet<DocumentTag> DocumentTags => Set<DocumentTag>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -61,6 +63,31 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
             b.HasIndex(e => new { e.UserId, e.OccurredAt })
                 .IsDescending(false, true);
+        });
+
+        modelBuilder.Entity<Tag>(b =>
+        {
+            b.Property(t => t.Label).IsRequired().HasMaxLength(64);
+            b.Property(t => t.Color).IsRequired().HasMaxLength(16);
+            b.HasOne(t => t.Parent)
+                .WithMany(t => t.Children)
+                .HasForeignKey(t => t.ParentId)
+                .OnDelete(DeleteBehavior.Restrict);
+            b.HasIndex(t => new { t.ParentId, t.Label }).IsUnique();
+        });
+
+        modelBuilder.Entity<DocumentTag>(b =>
+        {
+            b.HasKey(dt => new { dt.DocumentId, dt.TagId });
+            b.HasOne(dt => dt.Document)
+                .WithMany(d => d.DocumentTags)
+                .HasForeignKey(dt => dt.DocumentId)
+                .OnDelete(DeleteBehavior.Cascade);
+            b.HasOne(dt => dt.Tag)
+                .WithMany(t => t.DocumentTags)
+                .HasForeignKey(dt => dt.TagId)
+                .OnDelete(DeleteBehavior.Cascade);
+            b.HasIndex(dt => dt.TagId);
         });
     }
 }

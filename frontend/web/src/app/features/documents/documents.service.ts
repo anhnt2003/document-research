@@ -3,7 +3,14 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 import { API_CONFIG } from '../../core/api/api.config';
-import { DocumentDto, DocumentItem, Page, Tag } from '../../core/models';
+import {
+  CreateTagInput,
+  DocumentDto,
+  DocumentItem,
+  Page,
+  Tag,
+  UpdateTagInput,
+} from '../../core/models';
 
 export interface DocumentQuery {
   q?: string;
@@ -39,6 +46,47 @@ export class DocumentsService {
 
   async tags(): Promise<Tag[]> {
     return firstValueFrom(this.http.get<Tag[]>(`${this.config.baseUrl}/tags`));
+  }
+
+  async createTag(input: CreateTagInput): Promise<Tag> {
+    return firstValueFrom(
+      this.http.post<Tag>(`${this.config.baseUrl}/tags`, input)
+    );
+  }
+
+  async updateTag(id: string, input: UpdateTagInput): Promise<Tag> {
+    return firstValueFrom(
+      this.http.put<Tag>(`${this.config.baseUrl}/tags/${id}`, input)
+    );
+  }
+
+  async deleteTag(id: string): Promise<void> {
+    await firstValueFrom(
+      this.http.delete<void>(`${this.config.baseUrl}/tags/${id}`)
+    );
+  }
+
+  async documentTags(documentId: string): Promise<Tag[]> {
+    return firstValueFrom(
+      this.http.get<Tag[]>(`${this.config.baseUrl}/documents/${documentId}/tags`)
+    );
+  }
+
+  async attachTags(documentId: string, tagIds: string[]): Promise<void> {
+    await firstValueFrom(
+      this.http.post<void>(
+        `${this.config.baseUrl}/documents/${documentId}/tags`,
+        { tagIds }
+      )
+    );
+  }
+
+  async detachTag(documentId: string, tagId: string): Promise<void> {
+    await firstValueFrom(
+      this.http.delete<void>(
+        `${this.config.baseUrl}/documents/${documentId}/tags/${tagId}`
+      )
+    );
   }
 
   async create(payload: Partial<DocumentItem>): Promise<DocumentItem> {

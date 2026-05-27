@@ -31,13 +31,25 @@ export interface Permission {
   description: string;
 }
 
+export type TagColor = 'oxblood' | 'amber' | 'moss' | 'rust' | 'ink';
+
+export const TAG_COLORS: TagColor[] = ['oxblood', 'amber', 'moss', 'rust', 'ink'];
+
 export interface Tag {
   id: string;
   label: string;
-  color: 'oxblood' | 'amber' | 'moss' | 'rust' | 'ink';
-  parentId?: string;
+  color: TagColor;
+  parentId?: string | null;
   documentCount: number;
 }
+
+export interface CreateTagInput {
+  label: string;
+  color: TagColor;
+  parentId?: string | null;
+}
+
+export type UpdateTagInput = CreateTagInput;
 
 export interface DocumentItem {
   id: string;

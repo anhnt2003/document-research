@@ -11,6 +11,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { AuthStore } from '../../core/auth/auth.store';
+import { ToastService } from '../../shared/ui/toast/toast.service';
 import { environment } from '../../../environments/environment';
 
 interface GsiCredentialResponse {
@@ -103,18 +104,7 @@ function mapBackendError(err: HttpErrorResponse): string {
         </header>
 
         <div class="form reveal reveal-delay-1">
-          @if (!clientIdConfigured) {
-            <p class="error" data-testid="gis-not-configured">
-              Google Client ID chưa được cấu hình. Cập nhật
-              <code class="mono">environment.googleClientId</code> trước khi đăng nhập.
-            </p>
-          }
-
           <div #googleButton class="gsi-host" data-testid="google-button"></div>
-
-          @if (error()) {
-            <p class="error" data-testid="login-error">{{ error() }}</p>
-          }
 
           @if (loading()) {
             <p class="hint mono">Đang xác thực với máy chủ…</p>
@@ -309,11 +299,6 @@ function mapBackendError(err: HttpErrorResponse): string {
         display: flex;
         justify-content: center;
       }
-      .error {
-        font-style: italic;
-        color: var(--oxblood);
-        font-size: var(--fs-14);
-      }
       .hint {
         text-align: center;
         color: var(--ink-400);
@@ -348,15 +333,21 @@ export class LoginPage implements AfterViewInit {
   private auth = inject(AuthStore);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private toast = inject(ToastService);
 
   @ViewChild('googleButton', { static: true }) googleButton!: ElementRef<HTMLDivElement>;
 
   loading = signal(false);
-  error = signal<string | null>(null);
   clientIdConfigured = !!environment.googleClientId;
 
   ngAfterViewInit(): void {
-    if (!this.clientIdConfigured) return;
+    if (!this.clientIdConfigured) {
+      this.toast.error(
+        'Google Client ID chưa được cấu hình. Cập nhật environment.googleClientId trước khi đăng nhập.',
+        0
+      );
+      return;
+    }
     this.waitForGoogle().then((gsi) => {
       gsi.accounts.id.initialize({
         client_id: environment.googleClientId,
@@ -391,20 +382,19 @@ export class LoginPage implements AfterViewInit {
 
   private async onCredential(resp: GsiCredentialResponse): Promise<void> {
     if (!resp.credential) {
-      this.error.set('Không nhận được token từ Google.');
+      this.toast.error('Không nhận được token từ Google.');
       return;
     }
     this.loading.set(true);
-    this.error.set(null);
     try {
       await this.auth.signInWithGoogle(resp.credential);
       const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/search';
       this.router.navigateByUrl(returnUrl);
     } catch (err: unknown) {
       if (err instanceof HttpErrorResponse) {
-        this.error.set(mapBackendError(err));
+        this.toast.error(mapBackendError(err));
       } else {
-        this.error.set('Không thể đăng nhập. Vui lòng thử lại.');
+        this.toast.error('Không thể đăng nhập. Vui lòng thử lại.');
       }
     } finally {
       this.loading.set(false);

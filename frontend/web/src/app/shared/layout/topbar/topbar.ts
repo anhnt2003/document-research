@@ -60,7 +60,6 @@ import { UiAvatar } from '../../ui/avatar/avatar';
               }
             </div>
             <a routerLink="/account/profile" (click)="closeMenu()">Hồ sơ</a>
-            <a routerLink="/account/security" (click)="closeMenu()">Bảo mật</a>
             <a routerLink="/account/activity" (click)="closeMenu()">Hoạt động</a>
             <hr />
             <button type="button" (click)="signOut()">Đăng xuất</button>

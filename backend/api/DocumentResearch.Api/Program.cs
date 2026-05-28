@@ -4,6 +4,7 @@ using Asp.Versioning;
 using DocumentResearch.Api.Auth;
 using DocumentResearch.Api.Data;
 using DocumentResearch.Api.Services;
+using DocumentResearch.Api.Storage;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -53,8 +54,22 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<IDocumentIngestionTrigger, HttpDocumentIngestionTrigger>();
+builder.Services
+    .AddHttpClient(HttpDocumentIngestionTrigger.HttpClientName, c =>
+    {
+        c.BaseAddress = new Uri(builder.Configuration["Core:BaseUrl"] ?? "http://localhost:8000");
+        c.Timeout = TimeSpan.FromSeconds(5);
+    });
 
 builder.Services.Configure<AuthOptions>(builder.Configuration.GetSection("Auth"));
+builder.Services.Configure<DocumentUploadOptions>(builder.Configuration.GetSection(DocumentUploadOptions.SectionName));
+builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection(MinioOptions.SectionName));
+builder.Services.AddSingleton<IFileStorage, MinioFileStorage>();
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddHostedService<MinioBucketInitializer>();
+}
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<IGoogleTokenVerifier, GoogleTokenVerifier>();
 builder.Services.AddSingleton<IJwtIssuer, JwtIssuer>();

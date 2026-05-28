@@ -29,13 +29,14 @@ export function isMockPath(path: string, method: string): boolean {
   if (MOCK_PATH_PREFIXES.some((p) => startsWithPrefix(path, p))) {
     return true;
   }
-  if (path === '/documents' || path.startsWith('/documents?')) return true;
+  if (path === '/documents' || path.startsWith('/documents?')) {
+    return method.toUpperCase() !== 'POST';
+  }
   if (path.startsWith('/documents/')) {
     const tail = path.slice('/documents/'.length);
-    // /documents/{id}/tags → real backend; other sub-paths still mock.
     if (tail.includes('/')) {
       const [, sub] = tail.split('/');
-      if (sub === 'tags') return false;
+      if (sub === 'tags' || sub === 'ingestion') return false;
       return true;
     }
     return method.toUpperCase() !== 'GET';

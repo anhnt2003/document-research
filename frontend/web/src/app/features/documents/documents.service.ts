@@ -1,12 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 
 import { API_CONFIG } from '../../core/api/api.config';
 import {
   CreateTagInput,
   DocumentDto,
   DocumentItem,
+  IngestionStatusEvent,
   Page,
   Tag,
   UpdateTagInput,
@@ -89,9 +90,33 @@ export class DocumentsService {
     );
   }
 
-  async create(payload: Partial<DocumentItem>): Promise<DocumentItem> {
+  async create(input: { file: File; title?: string }): Promise<DocumentDto> {
+    const form = new FormData();
+    form.append('file', input.file, input.file.name);
+    if (input.title) {
+      form.append('title', input.title);
+    }
     return firstValueFrom(
-      this.http.post<DocumentItem>(`${this.config.baseUrl}/documents`, payload)
+      this.http.post<DocumentDto>(`${this.config.baseUrl}/documents`, form)
     );
+  }
+
+  streamIngestionStatus(documentId: string): Observable<IngestionStatusEvent> {
+    return new Observable<IngestionStatusEvent>((subscriber) => {
+      const url = `${this.config.baseUrl}/documents/${documentId}/ingestion/stream`;
+      const source = new EventSource(url, { withCredentials: true });
+      source.addEventListener('status', (e) => {
+        try {
+          subscriber.next(JSON.parse((e as MessageEvent).data) as IngestionStatusEvent);
+        } catch (err) {
+          subscriber.error(err);
+        }
+      });
+      source.onerror = () => {
+        source.close();
+        subscriber.complete();
+      };
+      return () => source.close();
+    });
   }
 }

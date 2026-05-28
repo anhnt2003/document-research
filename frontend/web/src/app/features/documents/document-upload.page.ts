@@ -11,7 +11,9 @@ interface UploadingFile {
   size: number;
   type: string;
   progress: number;
-  status: 'queued' | 'uploading' | 'done' | 'error';
+  status: 'queued' | 'uploading' | 'ingesting' | 'done' | 'error';
+  source?: File;
+  error?: string;
 }
 
 @Component({
@@ -100,9 +102,10 @@ interface UploadingFile {
                 <span [attr.data-status]="f.status">
                   @switch (f.status) {
                     @case ('queued') { đang chờ }
-                    @case ('uploading') { {{ f.progress.toFixed(0) }}% }
+                    @case ('uploading') { đang tải lên }
+                    @case ('ingesting') { đang trích xuất }
                     @case ('done') { hoàn tất }
-                    @case ('error') { lỗi }
+                    @case ('error') { {{ f.error ?? 'lỗi' }} }
                   }
                 </span>
               </div>
@@ -361,47 +364,52 @@ export class DocumentUploadPage {
       type: f.type,
       progress: 0,
       status: 'queued',
+      source: f,
     }));
     this.files.update((cur) => [...cur, ...newItems]);
-    for (const it of newItems) this.simulate(it);
+    for (const it of newItems) this.upload(it);
   }
 
-  private simulate(item: UploadingFile) {
-    this.files.update((cur) =>
-      cur.map((x) => (x.id === item.id ? { ...x, status: 'uploading' } : x))
-    );
-    const total = item.size > 0 ? item.size : 100000;
-    const step = Math.max(total / 30, 5000);
-    let loaded = 0;
-    const tick = () => {
-      loaded += step;
-      const p = Math.min(100, (loaded / total) * 100);
-      this.files.update((cur) =>
-        cur.map((x) =>
-          x.id === item.id
-            ? { ...x, progress: p, status: p >= 100 ? 'done' : 'uploading' }
-            : x
-        )
-      );
-      if (p < 100) setTimeout(tick, 90 + Math.random() * 80);
-      else this.tryCreate(item);
-    };
-    setTimeout(tick, 200);
+  private setStatus(itemId: string, patch: Partial<UploadingFile>) {
+    this.files.update((cur) => cur.map((x) => (x.id === itemId ? { ...x, ...patch } : x)));
   }
 
-  private async tryCreate(item: UploadingFile) {
+  private async upload(item: UploadingFile) {
+    if (!item.source) {
+      this.setStatus(item.id, { status: 'error', error: 'Missing source file' });
+      return;
+    }
+    this.setStatus(item.id, { status: 'uploading', progress: 30 });
     try {
-      await this.svc.create({
+      const dto = await this.svc.create({
+        file: item.source,
         title: item.name.replace(/\.[^.]+$/, ''),
-        summary: 'Tài liệu vừa được tải lên — chưa có tóm tắt.',
-        type: this.extOf(item.name).toLowerCase() as 'pdf' | 'docx' | 'md' | 'link' | 'image',
-        sizeBytes: item.size,
-        tagIds: [],
       });
-    } catch {
-      this.files.update((cur) =>
-        cur.map((x) => (x.id === item.id ? { ...x, status: 'error' } : x))
-      );
+      this.setStatus(item.id, { status: 'ingesting', progress: 60 });
+      this.svc.streamIngestionStatus(dto.id).subscribe({
+        next: (event) => {
+          if (event.status === 'Ready') {
+            this.setStatus(item.id, { status: 'done', progress: 100 });
+          } else if (event.status === 'Failed') {
+            this.setStatus(item.id, {
+              status: 'error',
+              progress: 0,
+              error: event.error ?? 'Ingestion failed',
+            });
+          } else if (event.status === 'Extracting' || event.status === 'Embedding') {
+            this.setStatus(item.id, { status: 'ingesting', progress: 80 });
+          }
+        },
+        error: () => {
+          this.setStatus(item.id, { status: 'error', error: 'Status stream lost' });
+        },
+      });
+    } catch (err) {
+      this.setStatus(item.id, {
+        status: 'error',
+        progress: 0,
+        error: err instanceof Error ? err.message : 'Upload failed',
+      });
     }
   }
 

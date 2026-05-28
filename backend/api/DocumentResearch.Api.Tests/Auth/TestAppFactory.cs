@@ -1,5 +1,9 @@
 using DocumentResearch.Api.Auth;
 using DocumentResearch.Api.Data;
+using DocumentResearch.Api.Services;
+using DocumentResearch.Api.Storage;
+using DocumentResearch.Api.Tests.Services;
+using DocumentResearch.Api.Tests.Storage;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +18,10 @@ public sealed class TestAppFactory : WebApplicationFactory<Program>
     private readonly string _databaseName = $"auth-tests-{Guid.NewGuid()}";
 
     public StubGoogleTokenVerifier Verifier { get; } = new();
+
+    public InMemoryFileStorage FileStorage { get; } = new();
+
+    public StubDocumentIngestionTrigger IngestionTrigger { get; } = new();
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
@@ -32,6 +40,7 @@ public sealed class TestAppFactory : WebApplicationFactory<Program>
                 ["Auth:Jwt:Audience"] = "docres-tests",
                 ["Auth:Jwt:SigningKey"] = "test-signing-key-must-be-long-enough-for-hs256-32b",
                 ["Auth:Jwt:LifetimeDays"] = "7",
+                ["Documents:MaxBytes"] = "1024",
             });
         });
 
@@ -55,6 +64,22 @@ public sealed class TestAppFactory : WebApplicationFactory<Program>
             }
 
             services.AddSingleton<IGoogleTokenVerifier>(Verifier);
+
+            var storageDescriptor = services.SingleOrDefault(d =>
+                d.ServiceType == typeof(IFileStorage));
+            if (storageDescriptor is not null)
+            {
+                services.Remove(storageDescriptor);
+            }
+            services.AddSingleton<IFileStorage>(FileStorage);
+
+            var triggerDescriptor = services.SingleOrDefault(d =>
+                d.ServiceType == typeof(IDocumentIngestionTrigger));
+            if (triggerDescriptor is not null)
+            {
+                services.Remove(triggerDescriptor);
+            }
+            services.AddSingleton<IDocumentIngestionTrigger>(IngestionTrigger);
         });
     }
 }

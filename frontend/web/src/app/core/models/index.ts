@@ -70,11 +70,28 @@ export interface DocumentItem {
   language?: 'vi' | 'en';
 }
 
+export type IngestionStatus =
+  | 'None'
+  | 'Pending'
+  | 'Extracting'
+  | 'Embedding'
+  | 'Ready'
+  | 'Failed';
+
 export interface DocumentDto {
   id: string;
   title: string;
   body: string;
   createdAt: Iso;
+  fileName: string | null;
+  mimeType: string | null;
+  sizeBytes: number | null;
+  ingestionStatus: IngestionStatus;
+}
+
+export interface IngestionStatusEvent {
+  status: IngestionStatus;
+  error: string | null;
 }
 
 export interface SearchHighlight {

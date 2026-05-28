@@ -16,4 +16,7 @@ public static class ErrorTypes
     public const string TagHasChildren = BaseUri + "errors/tag-has-children";
     public const string TagCycle = BaseUri + "errors/tag-cycle";
     public const string PermissionDenied = BaseUri + "errors/permission-denied";
+    public const string FileMissing = BaseUri + "errors/file-missing";
+    public const string FileTooLarge = BaseUri + "errors/file-too-large";
+    public const string UnsupportedMime = BaseUri + "errors/unsupported-mime";
 }

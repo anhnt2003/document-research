@@ -172,26 +172,7 @@ export const mockInterceptor: HttpInterceptorFn = (
       });
       return jsonOk(paginate(filtered, page, pageSize), 220);
     }
-    if (path === '/documents' && method === 'POST') {
-      const incoming = req.body as Partial<DocumentItem>;
-      const created: DocumentItem = {
-        id: `d-${Date.now()}`,
-        signature: `DOC-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
-        title: incoming.title ?? 'Tài liệu chưa đặt tên',
-        summary: incoming.summary ?? '',
-        type: incoming.type ?? 'pdf',
-        authorIds: incoming.authorIds ?? [CURRENT_USER_ID],
-        tagIds: incoming.tagIds ?? [],
-        sizeBytes: incoming.sizeBytes ?? 0,
-        pageCount: incoming.pageCount,
-        uploadedAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        ownerId: CURRENT_USER_ID,
-        visibility: incoming.visibility ?? 'team',
-      };
-      documents = [created, ...documents];
-      return jsonOk(created, 240);
-    }
+    // POST /documents is now served by the real backend (multipart upload). Pass through.
   }
 
   // --- SEARCH ---

@@ -2,8 +2,10 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 from core.config import settings
+from core.routers.ingest import router as ingest_router
 
 app = FastAPI(title="document-research core", version="0.1.0")
+app.include_router(ingest_router)
 
 
 class SearchRequest(BaseModel):

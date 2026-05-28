@@ -18,6 +18,19 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Document>(b =>
+        {
+            b.Property(d => d.Title).IsRequired();
+            b.Property(d => d.FileName).HasMaxLength(512);
+            b.Property(d => d.MimeType).HasMaxLength(128);
+            b.Property(d => d.StorageKey).HasMaxLength(512);
+            b.Property(d => d.FileHash).HasMaxLength(64);
+            b.Property(d => d.IngestionStatus).HasConversion<string>().HasMaxLength(16);
+            b.HasIndex(d => d.FileHash)
+                .IsUnique()
+                .HasFilter("\"FileHash\" IS NOT NULL");
+        });
+
         modelBuilder.Entity<User>(b =>
         {
             b.Property(u => u.Email).IsRequired().HasMaxLength(320);

@@ -4,4 +4,8 @@ public sealed record DocumentDto(
     Guid Id,
     string Title,
     string Body,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    string? FileName,
+    string? MimeType,
+    long? SizeBytes,
+    string IngestionStatus);

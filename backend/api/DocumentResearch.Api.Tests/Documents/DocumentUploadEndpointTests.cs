@@ -25,7 +25,7 @@ public class DocumentUploadEndpointTests : IClassFixture<TestAppFactory>
     [Fact]
     public async Task Post_Document_ReturnsCreated_WhenValidFile_AndPersistsToDbAndStorage()
     {
-        var token = await SignInAsAdminAsync();
+        var token = await _factory.SignInAsAdminAsync(_client);
         var bytes = "%PDF-1.4 fake content"u8.ToArray();
         var expectedHash = Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
 
@@ -64,7 +64,7 @@ public class DocumentUploadEndpointTests : IClassFixture<TestAppFactory>
     [Fact]
     public async Task Post_Document_ReturnsOkWithExistingDocument_WhenSameContentUploadedTwice()
     {
-        var token = await SignInAsAdminAsync();
+        var token = await _factory.SignInAsAdminAsync(_client);
         var bytes = "%PDF-1.4 duplicate me"u8.ToArray();
 
         var first = await UploadAsync(token, bytes, "application/pdf", "dup.pdf");
@@ -85,7 +85,7 @@ public class DocumentUploadEndpointTests : IClassFixture<TestAppFactory>
     [Fact]
     public async Task Post_Document_ReturnsBadRequest_WhenFileFieldMissing()
     {
-        var token = await SignInAsAdminAsync();
+        var token = await _factory.SignInAsAdminAsync(_client);
 
         using var form = new MultipartFormDataContent();
         form.Add(new StringContent("Only title"), "title");
@@ -102,7 +102,7 @@ public class DocumentUploadEndpointTests : IClassFixture<TestAppFactory>
     [Fact]
     public async Task Post_Document_ReturnsPayloadTooLarge_WhenFileExceedsMaxBytes()
     {
-        var token = await SignInAsAdminAsync();
+        var token = await _factory.SignInAsAdminAsync(_client);
         var bytes = new byte[2048];
         Array.Fill(bytes, (byte)'A');
 
@@ -116,7 +116,7 @@ public class DocumentUploadEndpointTests : IClassFixture<TestAppFactory>
     [Fact]
     public async Task Post_Document_ReturnsUnsupportedMediaType_WhenMimeNotAllowed()
     {
-        var token = await SignInAsAdminAsync();
+        var token = await _factory.SignInAsAdminAsync(_client);
         var bytes = "<svg></svg>"u8.ToArray();
 
         var response = await UploadAsync(token, bytes, "image/svg+xml", "icon.svg");
@@ -129,7 +129,7 @@ public class DocumentUploadEndpointTests : IClassFixture<TestAppFactory>
     [Fact]
     public async Task Post_Document_TriggersIngestion_OnSuccess()
     {
-        var token = await SignInAsAdminAsync();
+        var token = await _factory.SignInAsAdminAsync(_client);
         var bytes = "%PDF-1.4 trigger me"u8.ToArray();
 
         var response = await UploadAsync(token, bytes, "application/pdf", "trigger.pdf");
@@ -143,7 +143,7 @@ public class DocumentUploadEndpointTests : IClassFixture<TestAppFactory>
     [Fact]
     public async Task Post_Document_DoesNotTriggerIngestion_OnDedupe()
     {
-        var token = await SignInAsAdminAsync();
+        var token = await _factory.SignInAsAdminAsync(_client);
         var bytes = "%PDF-1.4 dedupe trigger"u8.ToArray();
 
         var first = await UploadAsync(token, bytes, "application/pdf", "first.pdf");
@@ -159,7 +159,7 @@ public class DocumentUploadEndpointTests : IClassFixture<TestAppFactory>
     [Fact]
     public async Task Post_Document_WritesActivityLog_OnSuccess()
     {
-        var token = await SignInAsAdminAsync();
+        var token = await _factory.SignInAsAdminAsync(_client);
         var bytes = "%PDF-1.4 activity log"u8.ToArray();
 
         var response = await UploadAsync(token, bytes, "application/pdf", "logged.pdf");
@@ -192,7 +192,7 @@ public class DocumentUploadEndpointTests : IClassFixture<TestAppFactory>
     [Fact]
     public async Task Post_Document_ReturnsForbidden_WhenUserLacksDocumentsWrite()
     {
-        var token = await SignInAsViewerAsync();
+        var token = await _factory.SignInWithPermissionsAsync(_client, "documents:read");
         var bytes = "%PDF-1.4"u8.ToArray();
 
         var response = await UploadAsync(token, bytes, "application/pdf", "x.pdf");
@@ -210,87 +210,5 @@ public class DocumentUploadEndpointTests : IClassFixture<TestAppFactory>
         using var request = new HttpRequestMessage(HttpMethod.Post, "/api/v1/documents") { Content = form };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         return await _client.SendAsync(request);
-    }
-
-    private async Task<string> SignInAsViewerAsync()
-    {
-        var email = $"viewer-{Guid.NewGuid():N}@example.com";
-        using (var scope = _factory.Services.CreateScope())
-        {
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            if (await db.Roles.FindAsync("role-viewer") is null)
-            {
-                db.Roles.Add(new Role
-                {
-                    Id = "role-viewer",
-                    Name = "Viewer",
-                    IsSystem = true,
-                    PermissionKeys = new List<string> { "documents:read" },
-                });
-            }
-            db.Users.Add(new User
-            {
-                Id = Guid.NewGuid(),
-                Email = email,
-                DisplayName = "Read Only",
-                Status = "active",
-                CreatedAt = DateTimeOffset.UtcNow,
-                UserRoles = new List<UserRole> { new() { RoleId = "role-viewer" } },
-            });
-            await db.SaveChangesAsync();
-        }
-
-        _factory.Verifier.Handler = _ => new GoogleIdentity(
-            Subject: $"google-sub-{Guid.NewGuid():N}",
-            Email: email,
-            EmailVerified: true,
-            Name: "Read Only",
-            Picture: null);
-
-        var signIn = await _client.PostAsJsonAsync("/api/v1/auth/google", new { id_token = "good" });
-        signIn.EnsureSuccessStatusCode();
-        return (await signIn.Content.ReadFromJsonAsync<JsonElement>())
-            .GetProperty("token").GetString()!;
-    }
-
-    private async Task<string> SignInAsAdminAsync()
-    {
-        var email = $"admin-{Guid.NewGuid():N}@example.com";
-        using (var scope = _factory.Services.CreateScope())
-        {
-            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            if (await db.Roles.FindAsync("role-admin") is null)
-            {
-                db.Roles.Add(new Role
-                {
-                    Id = "role-admin",
-                    Name = "Administrator",
-                    IsSystem = true,
-                    PermissionKeys = new List<string> { "*" },
-                });
-            }
-            db.Users.Add(new User
-            {
-                Id = Guid.NewGuid(),
-                Email = email,
-                DisplayName = "Upload Admin",
-                Status = "active",
-                CreatedAt = DateTimeOffset.UtcNow,
-                UserRoles = new List<UserRole> { new() { RoleId = "role-admin" } },
-            });
-            await db.SaveChangesAsync();
-        }
-
-        _factory.Verifier.Handler = _ => new GoogleIdentity(
-            Subject: $"google-sub-{Guid.NewGuid():N}",
-            Email: email,
-            EmailVerified: true,
-            Name: "Upload Admin",
-            Picture: null);
-
-        var signIn = await _client.PostAsJsonAsync("/api/v1/auth/google", new { id_token = "good" });
-        signIn.EnsureSuccessStatusCode();
-        return (await signIn.Content.ReadFromJsonAsync<JsonElement>())
-            .GetProperty("token").GetString()!;
     }
 }

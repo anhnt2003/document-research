@@ -1,6 +1,6 @@
 export type Iso = string;
 
-export type UserStatus = 'active' | 'locked' | 'invited';
+export type UserStatus = 'active' | 'locked';
 export type DocumentType = 'pdf' | 'docx' | 'md' | 'link' | 'image';
 export type Visibility = 'private' | 'team' | 'public';
 export type SearchMode = 'keyword' | 'semantic' | 'hybrid';
@@ -78,6 +78,8 @@ export type IngestionStatus =
   | 'Ready'
   | 'Failed';
 
+export type AccessLevel = 'owner' | 'none';
+
 export interface DocumentDto {
   id: string;
   title: string;
@@ -87,6 +89,8 @@ export interface DocumentDto {
   mimeType: string | null;
   sizeBytes: number | null;
   ingestionStatus: IngestionStatus;
+  ownerId: string;
+  myAccessLevel: AccessLevel;
 }
 
 export interface IngestionStatusEvent {

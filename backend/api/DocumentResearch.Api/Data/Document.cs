@@ -15,4 +15,7 @@ public class Document
     public string? FileHash { get; set; }
     public IngestionStatus IngestionStatus { get; set; } = IngestionStatus.None;
     public string? IngestionError { get; set; }
+
+    public Guid OwnerId { get; set; }
+    public User? Owner { get; set; }
 }

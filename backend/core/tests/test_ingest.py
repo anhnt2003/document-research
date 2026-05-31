@@ -9,7 +9,23 @@ from sqlalchemy import select
 from core.config import settings
 from core.db import SessionLocal
 from core.main import app
-from core.models import Document
+from core.models import Document, User
+
+
+async def _seed_owner() -> uuid.UUID:
+    owner_id = uuid.uuid4()
+    async with SessionLocal() as db:
+        db.add(
+            User(
+                id=owner_id,
+                email=f"owner-{owner_id.hex}@example.com",
+                display_name="Owner",
+                status="active",
+                created_at=datetime.now(UTC),
+            )
+        )
+        await db.commit()
+    return owner_id
 
 
 def _minio() -> Minio:
@@ -37,6 +53,7 @@ async def _seed_document(
         content_type=mime,
     )
 
+    owner_id = await _seed_owner()
     async with SessionLocal() as db:
         db.add(
             Document(
@@ -51,6 +68,7 @@ async def _seed_document(
                 file_hash=uuid.uuid4().hex,
                 ingestion_status="Pending",
                 ingestion_error=None,
+                owner_id=owner_id,
             )
         )
         await db.commit()
@@ -62,13 +80,22 @@ async def _load_document(document_id: uuid.UUID) -> Document:
         return result.scalar_one()
 
 
+SERVICE_HEADERS = {"X-Service-Token": settings.service_token}
+
+
+async def test_post_ingest_requires_service_token() -> None:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        response = await ac.post(f"/ingest/{uuid.uuid4()}")
+    assert response.status_code == 401
+
+
 async def test_post_ingest_extracts_txt_and_marks_ready() -> None:
     document_id = uuid.uuid4()
     storage_key = f"test-ingest/{uuid.uuid4().hex}.txt"
     await _seed_document(document_id, storage_key, "text/plain", b"Hello world", "hello.txt")
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        response = await ac.post(f"/ingest/{document_id}")
+        response = await ac.post(f"/ingest/{document_id}", headers=SERVICE_HEADERS)
 
     assert response.status_code == 204
 
@@ -80,7 +107,7 @@ async def test_post_ingest_extracts_txt_and_marks_ready() -> None:
 async def test_post_ingest_returns_404_when_document_missing() -> None:
     missing_id = uuid.uuid4()
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        response = await ac.post(f"/ingest/{missing_id}")
+        response = await ac.post(f"/ingest/{missing_id}", headers=SERVICE_HEADERS)
     assert response.status_code == 404
 
 
@@ -91,7 +118,7 @@ async def test_post_ingest_extracts_markdown() -> None:
     await _seed_document(document_id, storage_key, "text/markdown", content, "doc.md")
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        response = await ac.post(f"/ingest/{document_id}")
+        response = await ac.post(f"/ingest/{document_id}", headers=SERVICE_HEADERS)
     assert response.status_code == 204
 
     doc = await _load_document(document_id)
@@ -101,6 +128,7 @@ async def test_post_ingest_extracts_markdown() -> None:
 
 async def test_post_ingest_marks_failed_when_blob_missing() -> None:
     document_id = uuid.uuid4()
+    owner_id = await _seed_owner()
     # Seed DB row but NOT MinIO
     async with SessionLocal() as db:
         db.add(
@@ -116,12 +144,13 @@ async def test_post_ingest_marks_failed_when_blob_missing() -> None:
                 file_hash=uuid.uuid4().hex,
                 ingestion_status="Pending",
                 ingestion_error=None,
+                owner_id=owner_id,
             )
         )
         await db.commit()
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        response = await ac.post(f"/ingest/{document_id}")
+        response = await ac.post(f"/ingest/{document_id}", headers=SERVICE_HEADERS)
     assert response.status_code == 204
 
     doc = await _load_document(document_id)
@@ -144,7 +173,7 @@ async def test_post_ingest_extracts_docx() -> None:
     await _seed_document(document_id, storage_key, mime, content, "doc.docx")
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        response = await ac.post(f"/ingest/{document_id}")
+        response = await ac.post(f"/ingest/{document_id}", headers=SERVICE_HEADERS)
     assert response.status_code == 204
 
     doc = await _load_document(document_id)
@@ -166,7 +195,7 @@ async def test_post_ingest_extracts_pdf() -> None:
     await _seed_document(document_id, storage_key, "application/pdf", content, "doc.pdf")
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        response = await ac.post(f"/ingest/{document_id}")
+        response = await ac.post(f"/ingest/{document_id}", headers=SERVICE_HEADERS)
     assert response.status_code == 204
 
     doc = await _load_document(document_id)

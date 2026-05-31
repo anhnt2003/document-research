@@ -5,7 +5,7 @@ const allKeys = PERMISSIONS.map((p) => p.key);
 
 export const ROLES: Role[] = [
   {
-    id: 'role-admin',
+    id: 'admin',
     name: 'Quản trị viên',
     description: 'Toàn quyền quản trị hệ thống, người dùng và tài liệu.',
     permissionKeys: allKeys,

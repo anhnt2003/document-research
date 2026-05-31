@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using DocumentResearch.Api.Data;
@@ -13,6 +14,7 @@ public class DocumentIngestionStreamTests : IClassFixture<TestAppFactory>
 {
     private readonly TestAppFactory _factory;
     private readonly HttpClient _client;
+    private Guid _readerId;
 
     public DocumentIngestionStreamTests(TestAppFactory factory)
     {
@@ -23,6 +25,7 @@ public class DocumentIngestionStreamTests : IClassFixture<TestAppFactory>
     [Fact]
     public async Task Stream_ReturnsNotFound_WhenDocumentMissing()
     {
+        await AuthenticateAsReaderAsync();
         var missingId = Guid.NewGuid();
         var response = await _client.GetAsync($"/api/v1/documents/{missingId}/ingestion/stream");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -31,6 +34,7 @@ public class DocumentIngestionStreamTests : IClassFixture<TestAppFactory>
     [Fact]
     public async Task Stream_EmitsReadyEvent_AndCloses_WhenStatusBecomesReady()
     {
+        await AuthenticateAsReaderAsync();
         var documentId = Guid.NewGuid();
         await SeedDocumentAsync(documentId, IngestionStatus.Pending);
 
@@ -48,6 +52,7 @@ public class DocumentIngestionStreamTests : IClassFixture<TestAppFactory>
     [Fact]
     public async Task Stream_EmitsFailedEvent_AndCloses_WhenStatusBecomesFailed()
     {
+        await AuthenticateAsReaderAsync();
         var documentId = Guid.NewGuid();
         await SeedDocumentAsync(documentId, IngestionStatus.Pending);
 
@@ -84,6 +89,13 @@ public class DocumentIngestionStreamTests : IClassFixture<TestAppFactory>
         return events;
     }
 
+    private async Task AuthenticateAsReaderAsync()
+    {
+        var reader = await _factory.RegisterAndSignInAsync(_client, "documents:read");
+        _readerId = reader.UserId;
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", reader.Token);
+    }
+
     private async Task SeedDocumentAsync(Guid id, IngestionStatus status, string? error = null)
     {
         using var scope = _factory.Services.CreateScope();
@@ -101,6 +113,7 @@ public class DocumentIngestionStreamTests : IClassFixture<TestAppFactory>
             FileHash = Guid.NewGuid().ToString("N"),
             IngestionStatus = status,
             IngestionError = error,
+            OwnerId = _readerId,
         });
         await db.SaveChangesAsync();
     }

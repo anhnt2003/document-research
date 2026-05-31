@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
 import { API_CONFIG } from '../api/api.config';
-import { Iso, MeResponse, Role, SignInResponse, User } from '../models';
+import { DocumentDto, Iso, MeResponse, Role, SignInResponse, User } from '../models';
 
 const STORAGE_KEY = 'docres.session';
 
@@ -27,7 +27,7 @@ export class AuthStore {
   readonly token = computed(() => this.session()?.token ?? null);
   readonly isAuthenticated = computed(() => !!this.session());
   readonly permissions = computed(() => new Set(this.session()?.permissionKeys ?? []));
-  readonly isAdmin = computed(() => this.roles().some((r) => r.id === 'role-admin'));
+  readonly isAdmin = computed(() => this.roles().some((r) => r.id === 'admin'));
 
   async signInWithGoogle(idToken: string): Promise<void> {
     const resp = await firstValueFrom(
@@ -73,6 +73,14 @@ export class AuthStore {
   logout(): void {
     this.session.set(null);
     localStorage.removeItem(STORAGE_KEY);
+  }
+
+  canEditDocument(doc: DocumentDto): boolean {
+    return this.isAdmin() || doc.myAccessLevel === 'owner';
+  }
+
+  canDeleteDocument(doc: DocumentDto): boolean {
+    return this.isAdmin() || doc.myAccessLevel === 'owner';
   }
 
   hasPermission(key: string): boolean {

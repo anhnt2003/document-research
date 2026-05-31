@@ -275,10 +275,10 @@ export class UserDetailPage implements OnInit {
     return this.roles().find((r) => r.id === id)?.name ?? id;
   }
 
-  statusTone(s: string): 'moss' | 'rust' | 'amber' {
-    return s === 'active' ? 'moss' : s === 'locked' ? 'rust' : 'amber';
+  statusTone(s: string): 'moss' | 'rust' {
+    return s === 'active' ? 'moss' : 'rust';
   }
   statusLabel(s: string): string {
-    return s === 'active' ? 'Hoạt động' : s === 'locked' ? 'Đã khóa' : 'Đã mời';
+    return s === 'active' ? 'Hoạt động' : 'Đã khóa';
   }
 }

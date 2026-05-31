@@ -29,20 +29,32 @@ public sealed class DocumentService : IDocumentService
         _ingestionTrigger = ingestionTrigger;
     }
 
-    public async Task<DocumentDto?> GetByIdAsync(Guid id, CancellationToken ct)
+    public async Task<IReadOnlyList<DocumentDto>> ListAccessibleAsync(Guid userId, CancellationToken ct)
     {
-        var document = await _db.Documents.FindAsync([id], ct);
-        if (document is null)
-        {
-            return null;
-        }
+        var isAdmin = await IsAdminAsync(userId, ct);
+        var documents = await AccessibleQuery(userId, isAdmin)
+            .AsNoTracking()
+            .OrderByDescending(d => d.CreatedAt)
+            .ToListAsync(ct);
 
-        return ToDto(document);
+        return documents
+            .Select(d => ToDto(d, AccessLevel(d, userId, isAdmin)))
+            .ToList();
     }
 
-    public async Task<IngestionStatusSnapshot?> GetIngestionStatusAsync(Guid id, CancellationToken ct)
+    public async Task<DocumentDto?> GetByIdAsync(Guid id, Guid userId, CancellationToken ct)
     {
-        var snapshot = await _db.Documents
+        var isAdmin = await IsAdminAsync(userId, ct);
+        var document = await AccessibleQuery(userId, isAdmin)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(d => d.Id == id, ct);
+        return document is null ? null : ToDto(document, AccessLevel(document, userId, isAdmin));
+    }
+
+    public async Task<IngestionStatusSnapshot?> GetIngestionStatusAsync(Guid id, Guid userId, CancellationToken ct)
+    {
+        var isAdmin = await IsAdminAsync(userId, ct);
+        var snapshot = await AccessibleQuery(userId, isAdmin)
             .AsNoTracking()
             .Where(d => d.Id == id)
             .Select(d => new { d.IngestionStatus, d.IngestionError })
@@ -52,7 +64,22 @@ public sealed class DocumentService : IDocumentService
             : new IngestionStatusSnapshot(snapshot.IngestionStatus.ToString(), snapshot.IngestionError);
     }
 
-    public async Task<CreateDocumentOutcome> CreateAsync(CreateDocumentRequest request, CancellationToken ct)
+    public async Task<bool> CanAccessAsync(Guid id, Guid userId, CancellationToken ct)
+    {
+        var isAdmin = await IsAdminAsync(userId, ct);
+        return await AccessibleQuery(userId, isAdmin).AnyAsync(d => d.Id == id, ct);
+    }
+
+    private IQueryable<Document> AccessibleQuery(Guid userId, bool isAdmin)
+    {
+        var documents = _db.Documents.AsQueryable();
+        return isAdmin ? documents : documents.Where(d => d.OwnerId == userId);
+    }
+
+    private async Task<bool> IsAdminAsync(Guid userId, CancellationToken ct) =>
+        await _db.UserRoles.AnyAsync(ur => ur.UserId == userId && ur.RoleId == "admin", ct);
+
+    public async Task<CreateDocumentOutcome> CreateAsync(CreateDocumentRequest request, Guid ownerId, CancellationToken ct)
     {
         if (request.SizeBytes > _options.MaxBytes)
         {
@@ -74,7 +101,7 @@ public sealed class DocumentService : IDocumentService
             .FirstOrDefaultAsync(d => d.FileHash == hash, ct);
         if (existing is not null)
         {
-            return new CreateDocumentOutcome.Deduplicated(ToDto(existing));
+            return new CreateDocumentOutcome.Deduplicated(ToDto(existing, existing.OwnerId == ownerId ? "owner" : "none"));
         }
 
         var documentId = Guid.NewGuid();
@@ -95,15 +122,20 @@ public sealed class DocumentService : IDocumentService
             StorageKey = storageKey,
             FileHash = hash,
             IngestionStatus = IngestionStatus.Pending,
+            OwnerId = ownerId,
         };
         _db.Documents.Add(document);
         await _db.SaveChangesAsync(ct);
 
         _ = _ingestionTrigger.TriggerAsync(document.Id, CancellationToken.None);
 
-        return new CreateDocumentOutcome.Success(ToDto(document));
+        return new CreateDocumentOutcome.Success(ToDto(document, "owner"));
     }
 
-    internal static DocumentDto ToDto(Document d) =>
-        new(d.Id, d.Title, d.Body, d.CreatedAt, d.FileName, d.MimeType, d.SizeBytes, d.IngestionStatus.ToString());
+    internal static DocumentDto ToDto(Document d, string myAccessLevel) =>
+        new(d.Id, d.Title, d.Body, d.CreatedAt, d.FileName, d.MimeType, d.SizeBytes,
+            d.IngestionStatus.ToString(), d.OwnerId, myAccessLevel);
+
+    private static string AccessLevel(Document d, Guid userId, bool isAdmin) =>
+        d.OwnerId == userId || isAdmin ? "owner" : "none";
 }

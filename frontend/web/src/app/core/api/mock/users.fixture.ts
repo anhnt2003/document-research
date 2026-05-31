@@ -21,7 +21,7 @@ function mk(
 }
 
 export const USERS: User[] = [
-  mk('u-anh', 'anh.nt15@kiotviet.com', 'Nguyễn Tuấn Anh', ['role-admin'], {
+  mk('u-anh', 'anh.nt15@kiotviet.com', 'Nguyễn Tuấn Anh', ['admin'], {
     lastLoginAt: '2026-05-24T07:48:00Z',
   }),
   mk('u-hoa', 'hoa.lt@hubt.edu.vn', 'Lê Thị Hoa', ['role-editor', 'role-librarian']),
@@ -33,7 +33,7 @@ export const USERS: User[] = [
     status: 'locked',
   }),
   mk('u-thu', 'thu.np@hubt.edu.vn', 'Nguyễn Phương Thu', ['role-viewer'], {
-    status: 'invited',
+    status: 'active',
     lastLoginAt: null,
   }),
 ];

@@ -21,10 +21,8 @@ export class AdminService {
       this.http.patch<User>(`${this.config.baseUrl}/users/${id}`, payload)
     );
   }
-  createUser(payload: Partial<User>): Promise<User> {
-    return firstValueFrom(
-      this.http.post<User>(`${this.config.baseUrl}/users`, payload)
-    );
+  createUser(input: { email: string; displayName: string; roleIds: string[] }): Promise<User> {
+    return firstValueFrom(this.http.post<User>(`${this.config.baseUrl}/users`, input));
   }
 
   roles(): Promise<Role[]> {

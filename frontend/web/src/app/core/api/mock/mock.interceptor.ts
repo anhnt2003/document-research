@@ -231,21 +231,6 @@ export const mockInterceptor: HttpInterceptorFn = (
     users = users.map((u) => (u.id === userIdMatch[1] ? { ...u, ...patch } : u));
     return jsonOk(users.find((u) => u.id === userIdMatch[1]), 180);
   }
-  if (path === '/users' && method === 'POST') {
-    const body = req.body as Partial<User>;
-    const created: User = {
-      id: `u-${Date.now()}`,
-      email: body.email ?? '',
-      displayName: body.displayName ?? '',
-      avatarUrl: null,
-      status: 'invited',
-      roleIds: body.roleIds ?? ['role-viewer'],
-      createdAt: new Date().toISOString(),
-      lastLoginAt: null,
-    };
-    users = [...users, created];
-    return jsonOk(created, 220);
-  }
 
   // --- ROLES ---
   if (path === '/roles' && method === 'GET') {

@@ -23,3 +23,16 @@ class Document(Base):
     file_hash: Mapped[str | None] = mapped_column("FileHash", String(64))
     ingestion_status: Mapped[str] = mapped_column("IngestionStatus", String(16))
     ingestion_error: Mapped[str | None] = mapped_column("IngestionError", Text)
+    owner_id: Mapped[UUID] = mapped_column("OwnerId")
+
+
+class User(Base):
+    """Minimal read mapping of the Users table (DDL owned by backend/api)."""
+
+    __tablename__ = "Users"
+
+    id: Mapped[UUID] = mapped_column("Id", primary_key=True)
+    email: Mapped[str] = mapped_column("Email", String(320))
+    display_name: Mapped[str] = mapped_column("DisplayName", String(200))
+    status: Mapped[str] = mapped_column("Status", String(32))
+    created_at: Mapped[datetime] = mapped_column("CreatedAt")

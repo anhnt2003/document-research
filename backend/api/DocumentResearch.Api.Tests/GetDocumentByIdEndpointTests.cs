@@ -1,20 +1,18 @@
 using System.Net;
-using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
 using DocumentResearch.Api.Data;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
+using DocumentResearch.Api.Tests.Auth;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace DocumentResearch.Api.Tests;
 
-public class GetDocumentByIdEndpointTests : IClassFixture<GetDocumentByIdEndpointTests.TestAppFactory>
+public class GetDocumentByIdEndpointTests : IClassFixture<TestAppFactory>
 {
     private readonly TestAppFactory _factory;
     private readonly HttpClient _client;
+    private Guid _readerId;
 
     public GetDocumentByIdEndpointTests(TestAppFactory factory)
     {
@@ -25,6 +23,7 @@ public class GetDocumentByIdEndpointTests : IClassFixture<GetDocumentByIdEndpoin
     [Fact]
     public async Task Get_Document_ReturnsOk_WhenDocumentExists()
     {
+        await AuthenticateAsReaderAsync();
         var documentId = Guid.NewGuid();
         await SeedDocumentAsync(new Document
         {
@@ -42,6 +41,7 @@ public class GetDocumentByIdEndpointTests : IClassFixture<GetDocumentByIdEndpoin
     [Fact]
     public async Task Get_Document_ReturnsNotFound_WhenIdDoesNotExist()
     {
+        await AuthenticateAsReaderAsync();
         var missingId = Guid.NewGuid();
 
         var response = await _client.GetAsync($"/api/v1/documents/{missingId}");
@@ -52,6 +52,7 @@ public class GetDocumentByIdEndpointTests : IClassFixture<GetDocumentByIdEndpoin
     [Fact]
     public async Task Get_Document_ReturnsDocumentJson_WithIdTitleBodyCreatedAt()
     {
+        await AuthenticateAsReaderAsync();
         var documentId = Guid.NewGuid();
         var createdAt = new DateTimeOffset(2026, 5, 1, 12, 30, 0, TimeSpan.Zero);
         await SeedDocumentAsync(new Document
@@ -72,38 +73,20 @@ public class GetDocumentByIdEndpointTests : IClassFixture<GetDocumentByIdEndpoin
         Assert.Equal(createdAt, payload.GetProperty("created_at").GetDateTimeOffset());
     }
 
+    private async Task AuthenticateAsReaderAsync()
+    {
+        var reader = await _factory.RegisterAndSignInAsync(_client, "documents:read");
+        _readerId = reader.UserId;
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", reader.Token);
+    }
+
     private async Task SeedDocumentAsync(Document document)
     {
+        // The signed-in reader owns the document so resource-level read access is granted.
+        document.OwnerId = _readerId;
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         db.Documents.Add(document);
         await db.SaveChangesAsync();
-    }
-
-    public sealed class TestAppFactory : WebApplicationFactory<Program>
-    {
-        private readonly string _databaseName = $"documents-tests-{Guid.NewGuid()}";
-
-        protected override IHost CreateHost(IHostBuilder builder)
-        {
-            builder.UseEnvironment("Testing");
-            return base.CreateHost(builder);
-        }
-
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
-        {
-            builder.ConfigureServices(services =>
-            {
-                var descriptor = services.SingleOrDefault(d =>
-                    d.ServiceType == typeof(DbContextOptions<AppDbContext>));
-                if (descriptor is not null)
-                {
-                    services.Remove(descriptor);
-                }
-
-                services.AddDbContext<AppDbContext>(options =>
-                    options.UseInMemoryDatabase(_databaseName));
-            });
-        }
     }
 }

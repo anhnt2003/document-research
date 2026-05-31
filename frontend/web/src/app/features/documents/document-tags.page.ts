@@ -193,8 +193,15 @@ const EMPTY_DRAFT: DraftTag = { label: '', color: 'ink', parentId: null };
       :host { display: block; }
       .grid {
         display: grid;
-        grid-template-columns: 1fr 280px;
-        gap: 56px;
+        grid-template-columns: 1fr 300px;
+        gap: 28px;
+      }
+      .tree {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-2);
+        padding: 24px 26px;
       }
       .tree__head {
         display: flex;
@@ -204,11 +211,11 @@ const EMPTY_DRAFT: DraftTag = { label: '', color: 'ink', parentId: null };
       }
       .tree .eyebrow,
       .aside .eyebrow {
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         font-size: var(--fs-12);
         text-transform: uppercase;
-        letter-spacing: 0.2em;
-        color: var(--ink-500);
+        letter-spacing: 0.16em;
+        color: var(--ink-400);
         display: block;
       }
       .roots {
@@ -217,11 +224,11 @@ const EMPTY_DRAFT: DraftTag = { label: '', color: 'ink', parentId: null };
         gap: 8px 32px;
       }
       .root {
-        padding: 20px 0;
-        border-top: 1px solid var(--rule);
+        padding: 18px 0;
+        border-top: 1px solid var(--line-soft);
       }
       .root:first-child,
-      .root:nth-child(2) { border-top-color: var(--rule-strong); }
+      .root:nth-child(2) { border-top-color: var(--line); }
       .root__head {
         display: flex;
         align-items: center;
@@ -230,8 +237,8 @@ const EMPTY_DRAFT: DraftTag = { label: '', color: 'ink', parentId: null };
       }
       .root__count {
         font-size: var(--fs-12);
-        color: var(--ink-500);
-        letter-spacing: 0.06em;
+        color: var(--ink-400);
+        letter-spacing: 0.04em;
       }
       .actions {
         margin-left: auto;
@@ -245,18 +252,19 @@ const EMPTY_DRAFT: DraftTag = { label: '', color: 'ink', parentId: null };
         opacity: 1;
       }
       .icon {
-        width: 24px;
-        height: 24px;
-        border-radius: 4px;
+        width: 28px;
+        height: 28px;
+        border-radius: var(--r-sm);
         font-size: 13px;
         color: var(--ink-500);
         background: transparent;
         border: none;
         cursor: pointer;
+        transition: background 140ms var(--ease-out), color 140ms var(--ease-out);
       }
       .icon:hover {
-        background: var(--paper-200);
-        color: var(--ink-900);
+        background: var(--surface-2);
+        color: var(--accent-700);
       }
       .children {
         margin-left: 14px;
@@ -271,12 +279,13 @@ const EMPTY_DRAFT: DraftTag = { label: '', color: 'ink', parentId: null };
         font-size: var(--fs-14);
       }
       .children .line {
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         color: var(--ink-300);
       }
       .children__count {
+        font-family: var(--mono);
         font-size: var(--fs-12);
-        color: var(--ink-500);
+        color: var(--ink-400);
         margin-left: auto;
       }
       .indent { margin: 8px 0 12px 28px; }
@@ -285,7 +294,10 @@ const EMPTY_DRAFT: DraftTag = { label: '', color: 'ink', parentId: null };
         gap: 12px;
         align-items: center;
         flex-wrap: wrap;
-        padding: 8px 0;
+        padding: 12px 14px;
+        background: var(--surface-2);
+        border: 1px solid var(--line-soft);
+        border-radius: var(--r-md);
       }
       .form input[ui-input] { flex: 1 1 160px; min-width: 0; }
       .swatches {
@@ -296,34 +308,46 @@ const EMPTY_DRAFT: DraftTag = { label: '', color: 'ink', parentId: null };
         width: 18px;
         height: 18px;
         border-radius: 50%;
-        border: 1px solid var(--rule);
+        border: 1px solid var(--line);
         cursor: pointer;
         padding: 0;
+        transition: transform 140ms var(--ease-out);
       }
-      .swatch[data-color='oxblood'] { background: var(--oxblood); }
+      .swatch:hover { transform: scale(1.12); }
+      .swatch[data-color='oxblood'] { background: var(--accent); }
       .swatch[data-color='amber'] { background: var(--amber); }
-      .swatch[data-color='moss'] { background: var(--moss); }
-      .swatch[data-color='rust'] { background: var(--rust); }
+      .swatch[data-color='moss'] { background: var(--sage); }
+      .swatch[data-color='rust'] { background: var(--clay); }
       .swatch[data-color='ink'] { background: var(--ink-700); }
       .swatch[data-active] {
-        outline: 2px solid var(--ink-900);
+        outline: 2px solid var(--accent);
         outline-offset: 2px;
+      }
+      .aside {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-2);
+        padding: 24px 26px;
+        align-self: flex-start;
       }
       .legend {
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        margin-bottom: 24px;
+        gap: 12px;
+        margin: 14px 0 0;
       }
       .legend li {
         display: flex;
         align-items: center;
         gap: 10px;
         font-size: var(--fs-13);
-        color: var(--ink-600);
+        color: var(--ink-500);
       }
       .hint {
-        margin-top: 12px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--line-soft);
         font-size: var(--fs-13);
         color: var(--ink-500);
         font-style: italic;
@@ -333,9 +357,12 @@ const EMPTY_DRAFT: DraftTag = { label: '', color: 'ink', parentId: null };
         padding: 40px 0;
         text-align: center;
         color: var(--ink-400);
+        font-family: var(--serif);
+        font-style: italic;
       }
       @media (max-width: 880px) {
         .grid { grid-template-columns: 1fr; }
+        .tree, .aside { padding: 20px; }
       }
     `,
   ],
@@ -352,10 +379,7 @@ export class DocumentTagsPage implements OnInit {
   draft = signal<DraftTag>({ ...EMPTY_DRAFT });
   busy = signal(false);
 
-  canWrite = computed(() => {
-    const perms = this.auth.permissions();
-    return perms.has('*') || perms.has('tags:write');
-  });
+  canWrite = computed(() => this.auth.isAdmin() || this.auth.permissions().has('tags:write'));
 
   roots = computed<TagNode[]>(() => {
     const all = this.tags();

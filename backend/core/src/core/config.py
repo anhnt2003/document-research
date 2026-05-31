@@ -14,6 +14,14 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+psycopg://postgres:dev@localhost:5432/document_research"
 
+    # JWT issued by backend/api (HS256, shared secret). Must match Auth:Jwt there.
+    jwt_issuer: str = "docres-api"
+    jwt_audience: str = "docres-web"
+    jwt_secret: str = "dev-only-signing-key-replace-with-32-bytes-or-longer"
+
+    # Shared secret for service-to-service calls (api -> core /ingest).
+    service_token: str = "dev-only-service-token-replace-me"
+
     anthropic_api_key: str = ""
 
     minio_endpoint: str = "localhost:9000"

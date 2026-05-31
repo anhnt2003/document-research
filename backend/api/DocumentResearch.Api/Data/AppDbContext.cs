@@ -29,6 +29,11 @@ public class AppDbContext : DbContext
             b.HasIndex(d => d.FileHash)
                 .IsUnique()
                 .HasFilter("\"FileHash\" IS NOT NULL");
+            b.HasOne(d => d.Owner)
+                .WithMany()
+                .HasForeignKey(d => d.OwnerId)
+                .OnDelete(DeleteBehavior.Restrict);
+            b.HasIndex(d => d.OwnerId);
         });
 
         modelBuilder.Entity<User>(b =>

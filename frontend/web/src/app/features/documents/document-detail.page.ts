@@ -68,14 +68,26 @@ import { formatDateLong } from '../../core/util/date';
   styles: [
     `
       :host { display: block; padding-top: 24px; }
+      .page {
+        max-width: 880px;
+      }
       .crumb {
-        font-family: var(--font-display);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--serif);
         font-style: italic;
         color: var(--ink-500);
         font-size: var(--fs-14);
-        display: inline-block;
-        margin-bottom: 20px;
+        padding: 6px 14px;
+        border-radius: var(--r-pill);
+        background: var(--surface);
+        border: 1px solid var(--line);
+        box-shadow: var(--sh-1);
+        margin-bottom: 24px;
+        transition: color 180ms var(--ease-out), border-color 180ms var(--ease-out);
       }
+      .crumb:hover { color: var(--accent-700); border-color: var(--accent-100); }
       .head {
         display: grid;
         grid-template-columns: 1fr;
@@ -83,43 +95,68 @@ import { formatDateLong } from '../../core/util/date';
         padding-bottom: 32px;
       }
       .eyebrow {
+        font-family: var(--mono);
         font-size: var(--fs-12);
-        color: var(--ink-500);
-        letter-spacing: 0.08em;
+        color: var(--accent-700);
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
       }
       .title {
-        font-family: var(--font-display);
-        font-size: var(--fs-44);
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: clamp(30px, 4vw, 42px);
+        letter-spacing: -0.02em;
         line-height: 1.05;
-        margin: 8px 0 12px;
+        margin: 10px 0 12px;
       }
       .head__meta {
         display: flex;
         gap: 12px;
+        font-family: var(--mono);
         font-size: var(--fs-13);
-        color: var(--ink-500);
+        color: var(--ink-400);
       }
-      .content__h2 {
-        font-family: var(--font-display);
-        font-style: italic;
-        font-size: var(--fs-28);
-        margin: 24px 0 12px;
+      .tags,
+      .shares,
+      .content {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-2);
+        padding: 24px 26px;
       }
-      .body__p {
-        font-size: var(--fs-17);
-        line-height: 1.65;
-        color: var(--ink-800);
-        white-space: pre-wrap;
-      }
-      .loading { padding: 64px; text-align: center; color: var(--ink-400); }
-      .tags { margin: 12px 0 16px; }
-      .tags .eyebrow {
+      .tags { margin: 12px 0 18px; }
+      .shares { margin: 0 0 18px; }
+      .tags .eyebrow,
+      .shares .eyebrow {
         display: block;
         font-size: var(--fs-12);
         text-transform: uppercase;
-        letter-spacing: 0.2em;
-        color: var(--ink-500);
-        margin-bottom: 8px;
+        letter-spacing: 0.16em;
+        color: var(--ink-400);
+        margin-bottom: 12px;
+      }
+      .content { margin-top: 8px; }
+      .content__h2 {
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: 24px;
+        letter-spacing: -0.01em;
+        margin: 0 0 14px;
+      }
+      .content__h2 em { font-style: italic; color: var(--accent); }
+      .body__p {
+        font-family: var(--serif);
+        font-size: 16px;
+        line-height: 1.72;
+        color: var(--ink-700);
+        white-space: pre-wrap;
+      }
+      .loading { padding: 64px; text-align: center; color: var(--ink-400); }
+      @media (max-width: 720px) {
+        .tags,
+        .shares,
+        .content { padding: 20px; }
       }
     `,
   ],
@@ -137,8 +174,8 @@ export class DocumentDetailPage implements OnInit {
   docTagIds = computed(() => this.docTags().map((t) => t.id));
 
   canWrite = computed(() => {
-    const perms = this.auth.permissions();
-    return perms.has('*') || perms.has('tags:write');
+    const d = this.doc();
+    return d ? this.auth.canEditDocument(d) : false;
   });
 
   formatDateLong = formatDateLong;

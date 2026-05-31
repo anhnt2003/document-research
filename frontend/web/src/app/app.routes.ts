@@ -22,7 +22,7 @@ export const routes: Routes = [
       { path: 'account', loadChildren: () => import('./features/account/account.routes') },
       {
         path: 'admin',
-        canActivate: [roleGuard('role-admin')],
+        canActivate: [roleGuard('admin')],
         loadChildren: () => import('./features/admin/admin.routes'),
       },
     ],

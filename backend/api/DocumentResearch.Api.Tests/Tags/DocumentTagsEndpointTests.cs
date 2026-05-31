@@ -117,11 +117,11 @@ public class DocumentTagsEndpointTests : IClassFixture<TestAppFactory>
         var email = $"doctags-admin-{Guid.NewGuid():N}@example.com";
         await SeedAsync(db =>
         {
-            if (db.Roles.Find("role-admin") is null)
+            if (db.Roles.Find("admin") is null)
             {
                 db.Roles.Add(new Role
                 {
-                    Id = "role-admin",
+                    Id = "admin",
                     Name = "Administrator",
                     IsSystem = true,
                     PermissionKeys = new List<string> { "*" },
@@ -134,7 +134,7 @@ public class DocumentTagsEndpointTests : IClassFixture<TestAppFactory>
                 DisplayName = "Doc Tag Admin",
                 Status = "active",
                 CreatedAt = DateTimeOffset.UtcNow,
-                UserRoles = new List<UserRole> { new() { RoleId = "role-admin" } },
+                UserRoles = new List<UserRole> { new() { RoleId = "admin" } },
             });
         });
 

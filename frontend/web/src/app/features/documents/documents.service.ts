@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, firstValueFrom } from 'rxjs';
 
 import { API_CONFIG } from '../../core/api/api.config';
+import { AuthStore } from '../../core/auth/auth.store';
 import {
   CreateTagInput,
   DocumentDto,
@@ -26,6 +27,7 @@ export interface DocumentQuery {
 export class DocumentsService {
   private http = inject(HttpClient);
   private config = inject(API_CONFIG);
+  private auth = inject(AuthStore);
 
   async list(query: DocumentQuery = {}): Promise<Page<DocumentItem>> {
     let params = new HttpParams();
@@ -103,7 +105,11 @@ export class DocumentsService {
 
   streamIngestionStatus(documentId: string): Observable<IngestionStatusEvent> {
     return new Observable<IngestionStatusEvent>((subscriber) => {
-      const url = `${this.config.baseUrl}/documents/${documentId}/ingestion/stream`;
+      // EventSource cannot set an Authorization header, so the JWT rides the query string
+      // (the API only accepts access_token on this stream path).
+      const token = this.auth.token();
+      const base = `${this.config.baseUrl}/documents/${documentId}/ingestion/stream`;
+      const url = token ? `${base}?access_token=${encodeURIComponent(token)}` : base;
       const source = new EventSource(url, { withCredentials: true });
       source.addEventListener('status', (e) => {
         try {

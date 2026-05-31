@@ -4,6 +4,7 @@ using System.Text.Json;
 using Asp.Versioning;
 using DocumentResearch.Api.Auth;
 using DocumentResearch.Api.Contracts.Documents;
+using DocumentResearch.Api.Data;
 using DocumentResearch.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -61,6 +62,11 @@ public sealed class DocumentsController : ControllerBase
                 detail: "Request must include a non-empty 'file' form field.");
         }
 
+        if (!TryGetUserId(out var userId))
+        {
+            return Unauthorized();
+        }
+
         await using var stream = file.OpenReadStream();
         var request = new CreateDocumentRequest
         {
@@ -71,8 +77,8 @@ public sealed class DocumentsController : ControllerBase
             Title = title,
         };
 
-        var outcome = await _documents.CreateAsync(request, ct);
-        if (outcome is CreateDocumentOutcome.Success s && TryGetUserId(out var userId))
+        var outcome = await _documents.CreateAsync(request, userId, ct);
+        if (outcome is CreateDocumentOutcome.Success s)
         {
             await _account.LogAsync(userId, "document.upload", target: s.Document.Id.ToString(), ipAddress: Ip, ct);
         }
@@ -95,12 +101,38 @@ public sealed class DocumentsController : ControllerBase
         };
     }
 
+    [HttpGet]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [RequirePermission("documents:read")]
+    [ProducesResponseType<IReadOnlyList<DocumentDto>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<IReadOnlyList<DocumentDto>>> List(CancellationToken ct)
+    {
+        if (!TryGetUserId(out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var documents = await _documents.ListAccessibleAsync(userId, ct);
+        return Ok(documents);
+    }
+
     [HttpGet("{id:guid}")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [RequirePermission("documents:read")]
     [ProducesResponseType<DocumentDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<DocumentDto>> GetById(Guid id, CancellationToken ct)
     {
-        var document = await _documents.GetByIdAsync(id, ct);
+        if (!TryGetUserId(out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var document = await _documents.GetByIdAsync(id, userId, ct);
         if (document is null)
         {
             return Problem(
@@ -114,11 +146,21 @@ public sealed class DocumentsController : ControllerBase
     }
 
     [HttpGet("{id:guid}/ingestion/stream")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [RequirePermission("documents:read")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task IngestionStream(Guid id, CancellationToken ct)
     {
-        var initial = await _documents.GetIngestionStatusAsync(id, ct);
+        if (!TryGetUserId(out var userId))
+        {
+            Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return;
+        }
+
+        var initial = await _documents.GetIngestionStatusAsync(id, userId, ct);
         if (initial is null)
         {
             Response.StatusCode = StatusCodes.Status404NotFound;
@@ -139,7 +181,7 @@ public sealed class DocumentsController : ControllerBase
         string? lastSent = null;
         while (!ct.IsCancellationRequested)
         {
-            var snapshot = await _documents.GetIngestionStatusAsync(id, ct);
+            var snapshot = await _documents.GetIngestionStatusAsync(id, userId, ct);
             if (snapshot is null)
             {
                 break;
@@ -172,11 +214,28 @@ public sealed class DocumentsController : ControllerBase
 
     [HttpGet("{id:guid}/tags")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [RequirePermission("documents:read")]
     [ProducesResponseType<IReadOnlyList<TagDto>>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IReadOnlyList<TagDto>>> ListTags(Guid id, CancellationToken ct)
     {
+        if (!TryGetUserId(out var userId))
+        {
+            return Unauthorized();
+        }
+
+        // Resource-level read access gates tag visibility; a uniform 404 hides existence.
+        if (!await _documents.CanAccessAsync(id, userId, ct))
+        {
+            return Problem(
+                type: ErrorTypes.DocumentNotFound,
+                title: "Document not found",
+                statusCode: StatusCodes.Status404NotFound,
+                detail: $"No document with id={id}.");
+        }
+
         var tags = await _tags.ListForDocumentAsync(id, ct);
         if (tags is null)
         {
@@ -201,8 +260,22 @@ public sealed class DocumentsController : ControllerBase
         [FromBody] AttachTagsRequest request,
         CancellationToken ct)
     {
+        if (!TryGetUserId(out var userId))
+        {
+            return Unauthorized();
+        }
+
+        if (!await _documents.CanAccessAsync(id, userId, ct))
+        {
+            return Problem(
+                type: ErrorTypes.DocumentNotFound,
+                title: "Document not found",
+                statusCode: StatusCodes.Status404NotFound,
+                detail: $"No document with id={id}.");
+        }
+
         var outcome = await _tags.AttachAsync(id, request.TagIds, ct);
-        if (outcome is AttachTagsOutcome.Success && TryGetUserId(out var userId))
+        if (outcome is AttachTagsOutcome.Success)
         {
             await _account.LogAsync(userId, "attach_tags", target: id.ToString(), ipAddress: Ip, ct);
         }
@@ -232,8 +305,22 @@ public sealed class DocumentsController : ControllerBase
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DetachTag(Guid id, Guid tagId, CancellationToken ct)
     {
+        if (!TryGetUserId(out var userId))
+        {
+            return Unauthorized();
+        }
+
+        if (!await _documents.CanAccessAsync(id, userId, ct))
+        {
+            return Problem(
+                type: ErrorTypes.DocumentNotFound,
+                title: "Document not found",
+                statusCode: StatusCodes.Status404NotFound,
+                detail: $"No document with id={id}.");
+        }
+
         var outcome = await _tags.DetachAsync(id, tagId, ct);
-        if (outcome is DetachTagOutcome.Success && TryGetUserId(out var userId))
+        if (outcome is DetachTagOutcome.Success)
         {
             await _account.LogAsync(userId, "detach_tag", target: $"{id}:{tagId}", ipAddress: Ip, ct);
         }
@@ -248,4 +335,5 @@ public sealed class DocumentsController : ControllerBase
             _ => throw new InvalidOperationException("Unhandled outcome."),
         };
     }
+
 }

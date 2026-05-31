@@ -8,4 +8,6 @@ public sealed record DocumentDto(
     string? FileName,
     string? MimeType,
     long? SizeBytes,
-    string IngestionStatus);
+    string IngestionStatus,
+    Guid OwnerId,
+    string MyAccessLevel);

@@ -4,10 +4,15 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.auth import require_service_token
 from core.db import get_db
 from core.services import ingest as ingest_service
 
-router = APIRouter(prefix="/ingest", tags=["ingest"])
+router = APIRouter(
+    prefix="/ingest",
+    tags=["ingest"],
+    dependencies=[Depends(require_service_token)],
+)
 
 DbDep = Annotated[AsyncSession, Depends(get_db)]
 

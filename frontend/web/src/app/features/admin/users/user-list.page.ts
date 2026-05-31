@@ -8,7 +8,6 @@ import { UiPageHeader } from '../../../shared/ui/page-header/page-header';
 import { UiAvatar } from '../../../shared/ui/avatar/avatar';
 import { UiBadge } from '../../../shared/ui/badge/badge';
 import { UiTag } from '../../../shared/ui/tag/tag';
-import { UiButton } from '../../../shared/ui/button/button';
 import { UiInput } from '../../../shared/ui/input/input';
 import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
 
@@ -23,7 +22,6 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
     UiAvatar,
     UiBadge,
     UiTag,
-    UiButton,
     UiInput,
     RelativeDatePipe,
   ],
@@ -33,11 +31,7 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
       number="IV / 1"
       title="Người dùng"
       description="Quản lý người dùng, vai trò và trạng thái tài khoản."
-    >
-      <a routerLink="/admin/users/new">
-        <button ui-button>+ Mời người dùng</button>
-      </a>
-    </ui-page-header>
+    />
 
     <div class="bar">
       <input ui-input type="search" [(ngModel)]="q" placeholder="Lọc theo tên hoặc email…" class="search" />
@@ -45,7 +39,6 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
         <option value="">Mọi trạng thái</option>
         <option value="active">Đang hoạt động</option>
         <option value="locked">Đã khóa</option>
-        <option value="invited">Đã mời</option>
       </select>
       <select [(ngModel)]="roleFilter" class="select">
         <option value="">Mọi vai trò</option>
@@ -209,10 +202,10 @@ export class UserListPage implements OnInit {
     return this.roles().find((r) => r.id === id)?.name ?? id;
   }
 
-  statusTone(s: string): 'moss' | 'rust' | 'amber' {
-    return s === 'active' ? 'moss' : s === 'locked' ? 'rust' : 'amber';
+  statusTone(s: string): 'moss' | 'rust' {
+    return s === 'active' ? 'moss' : 'rust';
   }
   statusLabel(s: string): string {
-    return s === 'active' ? 'Hoạt động' : s === 'locked' ? 'Đã khóa' : 'Đã mời';
+    return s === 'active' ? 'Hoạt động' : 'Đã khóa';
   }
 }

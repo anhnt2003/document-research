@@ -63,6 +63,7 @@ builder.Services
     });
 
 builder.Services.Configure<AuthOptions>(builder.Configuration.GetSection("Auth"));
+builder.Services.Configure<CoreOptions>(builder.Configuration.GetSection(CoreOptions.SectionName));
 builder.Services.Configure<DocumentUploadOptions>(builder.Configuration.GetSection(DocumentUploadOptions.SectionName));
 builder.Services.Configure<MinioOptions>(builder.Configuration.GetSection(MinioOptions.SectionName));
 builder.Services.AddSingleton<IFileStorage, MinioFileStorage>();
@@ -95,6 +96,28 @@ builder.Services
                 ? null
                 : new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.SigningKey)),
             ClockSkew = TimeSpan.FromSeconds(30),
+        };
+        opts.Events = new JwtBearerEvents
+        {
+            // Browser EventSource cannot send an Authorization header, so the SSE
+            // ingestion stream authenticates via the access_token query parameter.
+            // Restricted to that single path to limit token-in-URL exposure.
+            OnMessageReceived = context =>
+            {
+                var path = context.HttpContext.Request.Path;
+                if (string.IsNullOrEmpty(context.Token)
+                    && path.HasValue
+                    && path.Value.EndsWith("/ingestion/stream", StringComparison.OrdinalIgnoreCase))
+                {
+                    var accessToken = context.Request.Query["access_token"].ToString();
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        context.Token = accessToken;
+                    }
+                }
+
+                return Task.CompletedTask;
+            },
         };
     });
 builder.Services.AddAuthorization();

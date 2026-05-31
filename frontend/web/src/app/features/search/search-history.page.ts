@@ -115,14 +115,22 @@ import { formatDate, formatDateTime } from '../../core/util/date';
       }
       .select {
         font: inherit;
-        padding: 10px 14px;
+        padding: 10px 38px 10px 15px;
         border: 1px solid var(--line);
         background: var(--surface);
         border-radius: var(--r-pill);
         box-shadow: var(--sh-1);
         font-size: 13.5px;
         color: var(--ink-700);
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%236f6757' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
       }
+      .select:hover { border-color: var(--accent-100); }
+      .select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
       .center { text-align: center; padding: 48px 0; color: var(--ink-400); }
       .timeline { display: flex; flex-direction: column; gap: 14px; }
       .entry {

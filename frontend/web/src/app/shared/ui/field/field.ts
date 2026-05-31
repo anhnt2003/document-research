@@ -7,16 +7,14 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   template: `
     <label class="field">
       @if (label) {
-        <span class="label">
-          <span class="label__text">{{ label }}</span>
-          @if (hint) {
-            <span class="label__hint">{{ hint }}</span>
-          }
-        </span>
+        <span class="label">{{ label }}</span>
       }
       <span class="control">
         <ng-content></ng-content>
       </span>
+      @if (hint) {
+        <span class="hint">{{ hint }}</span>
+      }
       @if (error) {
         <span class="error">{{ error }}</span>
       }
@@ -33,25 +31,25 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         gap: 6px;
       }
       .label {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 12px;
+        display: block;
         font-family: var(--mono);
         font-size: var(--fs-12);
         text-transform: uppercase;
         letter-spacing: 0.16em;
         color: var(--ink-500);
-      }
-      .label__hint {
-        text-transform: none;
-        letter-spacing: 0;
-        font-family: var(--sans);
-        font-size: var(--fs-13);
-        color: var(--ink-400);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .control {
         display: block;
+      }
+      .hint {
+        margin-top: 2px;
+        font-family: var(--sans);
+        font-size: var(--fs-13);
+        line-height: 1.45;
+        color: var(--ink-400);
       }
       .error {
         font-size: var(--fs-13);

@@ -1,13 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 
 import { AuthStore } from '../../core/auth/auth.store';
 import { Permission } from '../../core/models';
 import { AdminService } from '../admin/admin.service';
 import { UiPageHeader } from '../../shared/ui/page-header/page-header';
-import { UiButton } from '../../shared/ui/button/button';
 import { UiField } from '../../shared/ui/field/field';
-import { UiInput } from '../../shared/ui/input/input';
 import { UiAvatar } from '../../shared/ui/avatar/avatar';
 import { UiTag } from '../../shared/ui/tag/tag';
 
@@ -28,16 +25,14 @@ const GROUP_LABELS: Record<string, string> = {
   selector: 'account-profile-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, UiPageHeader, UiButton, UiField, UiInput, UiAvatar, UiTag],
+  imports: [UiPageHeader, UiField, UiAvatar, UiTag],
   template: `
     <ui-page-header
       eyebrow="№ III · TÀI KHOẢN"
       number="III / 1"
       title="Hồ sơ"
       description="Thông tin định danh và tuỳ chỉnh hiển thị của bạn trong kho lưu trữ."
-    >
-      <button ui-button>Lưu thay đổi</button>
-    </ui-page-header>
+    ></ui-page-header>
 
     @if (auth.user(); as user) {
       <div class="grid">
@@ -55,14 +50,14 @@ const GROUP_LABELS: Record<string, string> = {
             </div>
           </div>
 
-          <form class="form">
+          <div class="info">
             <ui-field label="Tên hiển thị" hint="Hiển thị trong toàn bộ ứng dụng">
-              <input ui-input type="text" name="displayName" [ngModel]="user.displayName" />
+              <span class="ro-value" data-testid="profile-display-name">{{ user.displayName }}</span>
             </ui-field>
-            <ui-field label="Email" hint="Đăng nhập và nhận thông báo">
-              <input ui-input type="email" name="email" [ngModel]="user.email" />
+            <ui-field label="Email" hint="Dùng để đăng nhập · liên kết với tài khoản Google">
+              <span class="ro-value" data-testid="profile-email">{{ user.email }}</span>
             </ui-field>
-          </form>
+          </div>
         </section>
 
         <section class="col-aside" aria-labelledby="perm-heading">
@@ -97,15 +92,6 @@ const GROUP_LABELS: Record<string, string> = {
   styles: [
     `
       :host { display: block; }
-      .select {
-        font: inherit;
-        padding: 10px 14px;
-        border: 1px solid var(--line);
-        background: var(--surface);
-        border-radius: var(--r-md);
-        box-shadow: var(--sh-1);
-        width: 100%;
-      }
       .grid {
         display: grid;
         grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr);
@@ -157,12 +143,19 @@ const GROUP_LABELS: Record<string, string> = {
         gap: 6px;
         flex-wrap: wrap;
       }
-      .form {
+      .info {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 24px;
       }
-      .form ui-field:nth-child(odd):last-child { grid-column: 1 / -1; }
+      .info ui-field:nth-child(odd):last-child { grid-column: 1 / -1; }
+      .ro-value {
+        display: block;
+        padding: 8px 0;
+        font-size: var(--fs-15);
+        color: var(--ink-900);
+        border-bottom: 1px solid var(--line-soft);
+      }
       .col-aside .eyebrow {
         font-family: var(--mono);
         font-size: var(--fs-12);
@@ -226,7 +219,7 @@ const GROUP_LABELS: Record<string, string> = {
         .grid { grid-template-columns: 1fr; }
       }
       @media (max-width: 720px) {
-        .form { grid-template-columns: 1fr; }
+        .info { grid-template-columns: 1fr; }
         .avatar-row { flex-direction: column; align-items: flex-start; gap: 14px; }
       }
     `,

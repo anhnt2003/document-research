@@ -26,7 +26,7 @@ interface UploadingFile {
       eyebrow="№ II/2 · TẢI LÊN"
       number="II / 2"
       title="Tải lên tài liệu"
-      description="Kéo–thả nhiều tệp cùng lúc. Các định dạng được hỗ trợ: PDF, DOCX, MD, TXT, hình ảnh."
+      description="Kéo–thả nhiều tệp cùng lúc. Các định dạng được hỗ trợ: PDF, DOCX, MD, TXT."
     />
 
     <div class="layout">
@@ -56,7 +56,6 @@ interface UploadingFile {
             <li><span class="formats__ext mono">DOCX</span><span>Bản thảo có cấu trúc heading</span></li>
             <li><span class="formats__ext mono">MD</span><span>Ghi chú &amp; tài liệu kỹ thuật</span></li>
             <li><span class="formats__ext mono">TXT</span><span>Văn bản thuần</span></li>
-            <li><span class="formats__ext mono">IMG</span><span>JPG / PNG — sẽ chạy OCR</span></li>
           </ul>
         </section>
 

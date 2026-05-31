@@ -30,26 +30,25 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         grid-template-columns: 1fr auto;
         align-items: flex-end;
         gap: 24px;
-        padding: 32px 0 24px;
-        border-bottom: 1px solid var(--rule);
-        margin-bottom: 32px;
+        padding: 12px 0 30px;
+        margin-bottom: 8px;
       }
       .eyebrow {
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         font-size: var(--fs-12);
         text-transform: uppercase;
-        letter-spacing: 0.2em;
-        color: var(--ink-500);
+        letter-spacing: 0.16em;
+        color: var(--accent-700);
         display: block;
-        margin-bottom: 12px;
+        margin-bottom: 14px;
       }
       .title {
-        font-family: var(--font-display);
-        font-weight: 400;
-        font-size: var(--fs-48);
-        font-variation-settings: 'opsz' 96, 'SOFT' 60;
-        letter-spacing: -0.025em;
-        line-height: 1.04;
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: clamp(1.875rem, 4vw, 2.625rem);
+        font-variation-settings: 'opsz' 60;
+        letter-spacing: -0.02em;
+        line-height: 1.05;
         color: var(--ink-900);
         margin: 0;
         display: flex;
@@ -57,19 +56,19 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         gap: 16px;
       }
       .num {
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         font-size: var(--fs-14);
-        color: var(--ink-300);
+        color: var(--ink-400);
         font-style: normal;
         font-weight: 500;
         letter-spacing: 0.12em;
         align-self: flex-start;
-        margin-top: 14px;
+        margin-top: 10px;
       }
       .desc {
         max-width: 560px;
-        margin-top: 12px;
-        color: var(--ink-600);
+        margin-top: 10px;
+        color: var(--ink-500);
         font-size: var(--fs-15);
         line-height: 1.55;
       }

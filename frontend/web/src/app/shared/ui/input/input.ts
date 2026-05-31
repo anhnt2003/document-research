@@ -10,18 +10,18 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
       :host {
         display: block;
         width: 100%;
-        font-family: var(--font-body);
+        font-family: var(--sans);
         font-size: var(--fs-15);
         color: var(--ink-900);
         background: transparent;
         border: none;
-        border-bottom: 1px solid var(--rule-strong);
+        border-bottom: 1px solid var(--line-strong);
         padding: 8px 0;
-        transition: border-color 160ms var(--ease-out);
+        transition: border-color 180ms var(--ease-out);
         outline: none;
       }
       :host:focus {
-        border-bottom-color: var(--oxblood);
+        border-bottom-color: var(--accent);
         outline: none;
       }
       :host::placeholder {
@@ -33,13 +33,18 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         cursor: not-allowed;
       }
       :host[ui-input='boxed'] {
-        padding: 10px 14px;
-        border: 1px solid var(--rule-strong);
-        border-radius: var(--radius-sm);
-        background: var(--paper-50);
+        padding: 11px 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        background: var(--surface);
+        box-shadow: var(--sh-1);
+        transition:
+          border-color 180ms var(--ease-out),
+          box-shadow 200ms var(--ease-out);
       }
       :host[ui-input='boxed']:focus {
-        border-color: var(--oxblood);
+        border-color: var(--accent-100);
+        box-shadow: var(--sh-1), 0 0 0 4px var(--accent-50);
       }
     `,
   ],

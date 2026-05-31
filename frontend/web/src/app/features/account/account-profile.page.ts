@@ -99,27 +99,37 @@ const GROUP_LABELS: Record<string, string> = {
       :host { display: block; }
       .select {
         font: inherit;
-        padding: 8px 12px;
-        border: 1px solid var(--rule-strong);
-        background: var(--paper-50);
-        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        border-radius: var(--r-md);
+        box-shadow: var(--sh-1);
         width: 100%;
       }
       .grid {
         display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        gap: 40px;
+        grid-template-columns: minmax(0, 1.4fr) minmax(280px, 1fr);
+        gap: 28px;
         align-items: flex-start;
       }
-      .col-main { max-width: 720px; }
+      .col-main {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-2);
+        padding: clamp(24px, 3vw, 34px);
+      }
       .col-aside {
-        padding-top: 28px;
-        border-top: 1px solid var(--rule);
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-1);
+        padding: clamp(22px, 3vw, 30px);
       }
       .perm-groups {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 28px 32px;
+        grid-template-columns: 1fr;
+        gap: 22px;
       }
       .avatar-row {
         display: flex;
@@ -127,12 +137,12 @@ const GROUP_LABELS: Record<string, string> = {
         align-items: center;
         padding-bottom: 24px;
         margin-bottom: 28px;
-        border-bottom: 1px solid var(--rule);
+        border-bottom: 1px solid var(--line-soft);
       }
       .avatar-row__text h2 {
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-size: var(--fs-30);
-        font-weight: 400;
+        font-weight: 500;
         font-variation-settings: 'opsz' 48, 'SOFT' 70;
         margin: 0 0 4px;
       }
@@ -154,28 +164,36 @@ const GROUP_LABELS: Record<string, string> = {
       }
       .form ui-field:nth-child(odd):last-child { grid-column: 1 / -1; }
       .col-aside .eyebrow {
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         font-size: var(--fs-12);
         text-transform: uppercase;
         letter-spacing: 0.2em;
-        color: var(--ink-500);
+        color: var(--accent-700);
         display: block;
         margin-bottom: 4px;
       }
       .aside-title {
-        font-family: var(--font-display);
-        font-style: italic;
+        font-family: var(--serif);
+        font-weight: 600;
         font-size: var(--fs-24);
         font-variation-settings: 'opsz' 36, 'SOFT' 80;
         color: var(--ink-900);
         margin: 0 0 22px;
+      }
+      .aside-title em { font-style: italic; color: var(--accent); }
+      .perm-group {
+        padding: 14px 16px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        box-shadow: var(--sh-1);
       }
       .perm-group__name {
         display: block;
         font-size: 10.5px;
         text-transform: uppercase;
         letter-spacing: 0.2em;
-        color: var(--ink-500);
+        color: var(--accent-700);
         margin-bottom: 8px;
       }
       .perm-group > ul {
@@ -192,7 +210,7 @@ const GROUP_LABELS: Record<string, string> = {
         line-height: 1.5;
       }
       .perm__dot {
-        color: var(--oxblood);
+        color: var(--accent);
         font-size: 14px;
         line-height: 1;
       }
@@ -203,6 +221,9 @@ const GROUP_LABELS: Record<string, string> = {
         color: var(--ink-500);
         font-style: italic;
         line-height: 1.5;
+      }
+      @media (max-width: 880px) {
+        .grid { grid-template-columns: 1fr; }
       }
       @media (max-width: 720px) {
         .form { grid-template-columns: 1fr; }

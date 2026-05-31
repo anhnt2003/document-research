@@ -115,20 +115,29 @@ import { formatDate, formatDateTime } from '../../core/util/date';
       }
       .select {
         font: inherit;
-        padding: 8px 12px;
-        border: 1px solid var(--rule-strong);
-        background: var(--paper-50);
-        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        border-radius: var(--r-pill);
+        box-shadow: var(--sh-1);
+        font-size: 13.5px;
+        color: var(--ink-700);
       }
       .center { text-align: center; padding: 48px 0; color: var(--ink-400); }
-      .timeline { display: flex; flex-direction: column; }
+      .timeline { display: flex; flex-direction: column; gap: 14px; }
       .entry {
         display: grid;
-        grid-template-columns: 140px 1fr auto;
-        gap: 32px;
-        padding: 28px 0;
-        border-bottom: 1px solid var(--rule);
+        grid-template-columns: 120px 1fr auto;
+        gap: 26px;
+        padding: 22px 26px;
+        align-items: center;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-1);
+        transition: transform 180ms var(--ease-out), box-shadow 220ms var(--ease-out);
       }
+      .entry:hover { transform: translateY(-2px); box-shadow: var(--sh-3); }
       .when {
         display: flex;
         flex-direction: column;
@@ -136,22 +145,23 @@ import { formatDate, formatDateTime } from '../../core/util/date';
         color: var(--ink-500);
       }
       .day {
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-size: var(--fs-48);
-        font-variation-settings: 'opsz' 72, 'SOFT' 80;
+        font-weight: 600;
         color: var(--ink-900);
         line-height: 1;
       }
       .month {
         text-transform: uppercase;
-        font-size: var(--fs-12);
-        letter-spacing: 0.2em;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        color: var(--ink-400);
       }
       .full {
         font-size: 11px;
-        color: var(--ink-400);
+        color: var(--ink-300);
         margin-top: 4px;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.02em;
       }
       .body__head {
         display: flex;
@@ -159,30 +169,31 @@ import { formatDate, formatDateTime } from '../../core/util/date';
         align-items: baseline;
       }
       .pin {
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-style: italic;
-        color: var(--oxblood);
+        color: var(--accent);
         font-size: var(--fs-20);
       }
       .query {
-        font-family: var(--font-display);
-        font-size: var(--fs-30);
-        font-weight: 400;
+        font-family: var(--serif);
+        font-size: 22px;
+        font-weight: 500;
         font-style: italic;
-        font-variation-settings: 'opsz' 60, 'SOFT' 80;
         letter-spacing: -0.015em;
-        line-height: 1.15;
+        line-height: 1.2;
       }
-      .query a { color: var(--ink-900); border-bottom: none; }
-      .query a:hover { color: var(--oxblood); border-bottom: none; }
+      .query a { color: var(--ink-900); border-bottom: none; transition: color 180ms var(--ease-out); }
+      .query a:hover { color: var(--accent); border-bottom: none; }
       .body__meta {
         display: flex;
-        gap: 10px;
+        gap: 12px;
         align-items: center;
         flex-wrap: wrap;
-        margin-top: 12px;
-        color: var(--ink-500);
-        font-size: var(--fs-13);
+        margin-top: 9px;
+        color: var(--ink-400);
+        font-family: var(--mono);
+        font-size: 11.5px;
+        letter-spacing: 0.02em;
       }
       .dot { color: var(--ink-300); }
       .actions {
@@ -192,10 +203,16 @@ import { formatDate, formatDateTime } from '../../core/util/date';
         align-self: center;
       }
       @media (max-width: 760px) {
-        .entry { grid-template-columns: 1fr; gap: 12px; }
-        .when { flex-direction: row; align-items: baseline; }
+        .filters { grid-template-columns: 1fr; }
+        .entry {
+          grid-template-columns: 1fr;
+          gap: 14px;
+          padding: 20px 18px;
+        }
+        .when { flex-direction: row; align-items: baseline; gap: 10px; }
         .day { font-size: var(--fs-30); }
-        .actions { flex-direction: row; }
+        .full { display: none; }
+        .actions { flex-direction: row; flex-wrap: wrap; }
       }
     `,
   ],

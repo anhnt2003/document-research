@@ -23,28 +23,31 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         flex-direction: column;
         align-items: center;
         text-align: center;
-        padding: 48px 32px;
+        padding: 72px 32px;
         color: var(--ink-500);
       }
       .glyph {
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-style: italic;
         font-size: 80px;
         line-height: 1;
-        color: var(--rule-strong);
-        margin-bottom: 16px;
+        color: var(--accent);
+        opacity: 0.3;
+        margin-bottom: 18px;
       }
       .title {
-        font-style: italic;
-        font-size: var(--fs-20);
-        font-variation-settings: 'opsz' 36, 'SOFT' 80;
-        color: var(--ink-800);
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: var(--fs-24);
+        font-variation-settings: 'opsz' 36;
+        color: var(--ink-900);
         margin-bottom: 8px;
       }
       .desc {
-        max-width: 420px;
+        max-width: 38ch;
         line-height: 1.6;
-        margin-bottom: 16px;
+        margin-bottom: 18px;
+        color: var(--ink-500);
       }
       .actions {
         display: flex;

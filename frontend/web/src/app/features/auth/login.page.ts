@@ -119,30 +119,42 @@ function mapBackendError(err: HttpErrorResponse): string {
   `,
   styles: [
     `
-      :host { display: block; min-height: 100vh; }
+      :host {
+        display: block;
+        min-height: 100vh;
+        background:
+          radial-gradient(1100px 760px at 82% -8%, rgba(47, 111, 106, 0.07), transparent 60%),
+          radial-gradient(900px 700px at -6% 110%, rgba(192, 106, 74, 0.05), transparent 55%),
+          var(--bg);
+      }
       .page {
         display: grid;
         grid-template-columns: 1fr 1.05fr;
         min-height: 100vh;
+        gap: 28px;
+        padding: 28px;
+        align-items: stretch;
       }
       /* aside (editorial column) */
       .aside {
         background: var(--ink-900);
-        color: var(--paper-50);
+        color: var(--surface);
         padding: 56px 56px 40px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         position: relative;
         overflow: hidden;
+        border-radius: var(--r-xl);
+        box-shadow: var(--sh-3);
       }
       .aside::before {
         content: '';
         position: absolute;
         inset: 0;
         background:
-          radial-gradient(800px 400px at 110% -20%, rgba(184, 116, 42, 0.28), transparent 70%),
-          radial-gradient(700px 500px at -10% 120%, rgba(122, 31, 37, 0.32), transparent 70%);
+          radial-gradient(800px 400px at 110% -20%, rgba(47, 111, 106, 0.42), transparent 70%),
+          radial-gradient(700px 500px at -10% 120%, rgba(192, 106, 74, 0.26), transparent 70%);
         opacity: 0.9;
         pointer-events: none;
       }
@@ -157,11 +169,11 @@ function mapBackendError(err: HttpErrorResponse): string {
       }
       .aside > * { position: relative; z-index: 1; }
       .aside__eyebrow {
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         font-size: var(--fs-12);
         text-transform: uppercase;
         letter-spacing: 0.24em;
-        color: var(--paper-200);
+        color: var(--bg-2);
         opacity: 0.7;
       }
       .quote {
@@ -169,26 +181,26 @@ function mapBackendError(err: HttpErrorResponse): string {
         max-width: 480px;
       }
       .quote p {
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-style: italic;
         font-size: clamp(28px, 4vw, 44px);
         font-weight: 300;
         font-variation-settings: 'opsz' 96, 'SOFT' 80;
         line-height: 1.15;
-        color: var(--paper-50);
+        color: var(--bg);
         letter-spacing: -0.015em;
       }
       .quote p em {
         font-style: italic;
-        color: var(--amber);
+        color: var(--accent-100);
         font-weight: 400;
       }
       .quote__cite {
         margin-top: 24px;
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         font-size: var(--fs-13);
         letter-spacing: 0.05em;
-        color: var(--paper-200);
+        color: var(--bg-2);
         opacity: 0.7;
       }
       .aside__meta {
@@ -204,24 +216,27 @@ function mapBackendError(err: HttpErrorResponse): string {
         gap: 4px;
       }
       .aside__meta .mono {
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         font-size: 10.5px;
         text-transform: uppercase;
         letter-spacing: 0.2em;
-        color: var(--paper-200);
+        color: var(--bg-2);
         opacity: 0.5;
       }
       .aside__meta .display-italic {
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-style: italic;
         font-size: var(--fs-16);
-        color: var(--paper-50);
+        color: var(--bg);
       }
 
       /* panel (form column) */
       .panel {
-        background: var(--paper-50);
-        padding: 56px 56px 32px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-xl);
+        box-shadow: var(--sh-2);
+        padding: 56px clamp(36px, 5vw, 60px) 32px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -233,7 +248,7 @@ function mapBackendError(err: HttpErrorResponse): string {
       .brand {
         display: inline-flex;
         align-items: center;
-        gap: 10px;
+        gap: 12px;
         text-decoration: none;
         border-bottom: none;
         color: inherit;
@@ -241,52 +256,55 @@ function mapBackendError(err: HttpErrorResponse): string {
       }
       .brand:hover { border-bottom: none; }
       .brand__mark {
-        width: 28px;
-        height: 28px;
+        width: 40px;
+        height: 40px;
         background: var(--ink-900);
-        color: var(--paper-50);
+        color: var(--bg);
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: var(--radius-xs);
-        font-family: var(--font-display);
+        border-radius: 12px;
+        font-family: var(--serif);
         font-style: italic;
-        font-size: 18px;
+        font-weight: 600;
+        font-size: 22px;
+        box-shadow: var(--sh-2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
       }
       .brand__name {
-        font-family: var(--font-display);
-        font-style: italic;
-        font-size: var(--fs-16);
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: var(--fs-18);
+        letter-spacing: -0.01em;
       }
-      .dot { color: var(--oxblood); }
+      .dot { color: var(--accent); }
       .header .eyebrow {
         display: block;
         margin-bottom: 18px;
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         font-size: var(--fs-12);
         text-transform: uppercase;
         letter-spacing: 0.22em;
-        color: var(--ink-500);
+        color: var(--accent-700);
       }
       .header h1 {
-        font-family: var(--font-display);
-        font-size: clamp(40px, 5vw, 60px);
-        font-weight: 400;
+        font-family: var(--serif);
+        font-size: clamp(40px, 5vw, 58px);
+        font-weight: 500;
         font-variation-settings: 'opsz' 120, 'SOFT' 60;
         letter-spacing: -0.03em;
-        line-height: 0.98;
+        line-height: 1;
         margin-bottom: 16px;
       }
       .header h1 em {
         font-style: italic;
-        color: var(--oxblood);
+        color: var(--accent);
         font-variation-settings: 'opsz' 120, 'SOFT' 80;
       }
       .lede {
         font-size: var(--fs-16);
-        color: var(--ink-600);
-        max-width: 440px;
-        line-height: 1.55;
+        color: var(--ink-500);
+        max-width: 44ch;
+        line-height: 1.6;
       }
 
       .form {
@@ -309,7 +327,7 @@ function mapBackendError(err: HttpErrorResponse): string {
       .foot {
         margin-top: auto;
         padding-top: 24px;
-        border-top: 1px solid var(--rule);
+        border-top: 1px solid var(--line-soft);
         text-align: center;
       }
       .foot .mono {
@@ -319,12 +337,12 @@ function mapBackendError(err: HttpErrorResponse): string {
       }
 
       @media (max-width: 880px) {
-        .page { grid-template-columns: 1fr; }
-        .aside { padding: 40px 32px; }
+        .page { grid-template-columns: 1fr; gap: 18px; padding: 18px; }
+        .aside { padding: 40px 32px; border-radius: var(--r-lg); }
         .quote { margin: 40px 0; }
         .quote p { font-size: 28px; }
         .aside__meta { grid-template-columns: 1fr 1fr; gap: 16px; }
-        .panel { padding: 40px 32px; }
+        .panel { padding: 40px 32px; border-radius: var(--r-lg); }
       }
     `,
   ],

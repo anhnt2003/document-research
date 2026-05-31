@@ -103,36 +103,61 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
         gap: 12px;
         align-items: center;
         margin-bottom: 24px;
+        flex-wrap: wrap;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-2);
+        padding: 14px 18px;
       }
-      .search { min-width: 320px; flex: 1; }
+      .search { min-width: 280px; flex: 1; }
       .select {
         font: inherit;
-        padding: 8px 12px;
-        border: 1px solid var(--rule-strong);
-        background: var(--paper-50);
-        border-radius: var(--radius-sm);
+        padding: 10px 36px 10px 15px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        box-shadow: var(--sh-1);
+        border-radius: var(--r-pill);
         min-width: 160px;
+        color: var(--ink-700);
+        -webkit-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%236f6757' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
       }
       .center { text-align: center; padding: 48px 0; color: var(--ink-400); }
-      .table { width: 100%; border-collapse: collapse; }
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-2);
+        overflow: hidden;
+      }
       thead th {
         text-align: left;
-        font-family: var(--font-mono);
-        font-size: var(--fs-12);
+        font-family: var(--mono);
+        font-size: 10.5px;
         text-transform: uppercase;
-        letter-spacing: 0.16em;
-        color: var(--ink-500);
-        padding: 14px 16px;
-        border-bottom: 1px solid var(--rule);
+        letter-spacing: 0.12em;
+        color: var(--ink-400);
+        padding: 15px 24px;
+        border-bottom: 1px solid var(--line);
+        background: var(--surface-2);
       }
       tbody td {
-        padding: 16px;
-        border-bottom: 1px solid var(--rule);
+        padding: 18px 24px;
+        border-bottom: 1px solid var(--line-soft);
         vertical-align: middle;
         font-size: var(--fs-14);
       }
-      tbody tr { transition: background 120ms var(--ease-out); }
-      tbody tr:hover { background: var(--paper-100); }
+      tbody tr { transition: background 160ms var(--ease-out); position: relative; }
+      tbody tr:last-child td { border-bottom: none; }
+      tbody tr:hover { background: var(--surface-2); }
+      tbody tr td:first-child { box-shadow: inset 0 0 0 0 var(--accent); transition: box-shadow 160ms var(--ease-out); }
+      tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 0 var(--accent); }
       .user {
         display: flex;
         align-items: center;
@@ -142,26 +167,35 @@ import { RelativeDatePipe } from '../../../shared/pipes/relative-date.pipe';
       }
       .user:hover { border-bottom: none; }
       .user__name {
-        font-family: var(--font-display);
-        font-style: italic;
+        font-family: var(--serif);
+        font-weight: 600;
         font-size: var(--fs-16);
         color: var(--ink-900);
+        letter-spacing: -0.01em;
+        transition: color 160ms var(--ease-out);
       }
+      .user:hover .user__name { color: var(--accent); }
       .user__email {
         display: block;
+        font-family: var(--mono);
         font-size: var(--fs-12);
-        color: var(--ink-500);
-        margin-top: 2px;
+        color: var(--ink-400);
+        margin-top: 3px;
         letter-spacing: 0.04em;
       }
       .roles { display: flex; gap: 6px; flex-wrap: wrap; }
-      .mono { font-family: var(--font-mono); font-size: var(--fs-12); color: var(--ink-500); }
-      .dept { color: var(--ink-600); }
+      .mono { font-family: var(--mono); font-size: var(--fs-12); color: var(--ink-500); }
+      .dept { color: var(--ink-500); }
       .link {
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-style: italic;
-        color: var(--oxblood);
+        color: var(--accent);
         font-size: var(--fs-14);
+        border-bottom: none;
+      }
+      .link:hover { color: var(--accent-700); border-bottom: none; }
+      @media (max-width: 720px) {
+        thead th, tbody td { padding-left: 16px; padding-right: 16px; }
       }
     `,
   ],

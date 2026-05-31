@@ -82,32 +82,49 @@ import { UiTag } from '../tag/tag';
       .empty { color: var(--ink-400); font-size: var(--fs-12); }
       .add { position: relative; display: inline-block; }
       .trigger {
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         font-size: var(--fs-12);
         color: var(--ink-500);
-        background: transparent;
-        border: 1px dashed var(--rule-strong);
-        border-radius: var(--radius-pill);
-        padding: 4px 10px;
+        background: var(--surface);
+        border: 1px dashed var(--line-strong);
+        border-radius: var(--r-pill);
+        padding: 5px 13px;
         cursor: pointer;
+        transition:
+          color 160ms var(--ease-out),
+          border-color 160ms var(--ease-out),
+          background 160ms var(--ease-out);
       }
-      .trigger:hover { color: var(--ink-900); border-color: var(--ink-700); }
+      .trigger:hover {
+        color: var(--accent-700);
+        border-color: var(--accent-100);
+        background: var(--accent-50);
+      }
       .filter {
         font-size: var(--fs-14);
-        padding: 4px 8px;
-        border: 1px solid var(--rule-strong);
-        border-radius: var(--radius-sm);
+        padding: 8px 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        background: var(--surface);
+        box-shadow: var(--sh-1);
         margin-right: 8px;
+        outline: none;
+        transition: border-color 180ms var(--ease-out), box-shadow 200ms var(--ease-out);
+      }
+      .filter:focus {
+        border-color: var(--accent-100);
+        box-shadow: var(--sh-1), 0 0 0 4px var(--accent-50);
       }
       .options {
         list-style: none;
-        padding: 6px 0;
+        padding: 6px;
         margin: 8px 0 0;
         max-height: 240px;
         overflow-y: auto;
-        border: 1px solid var(--rule);
-        border-radius: var(--radius-sm);
-        background: var(--paper-50);
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        background: var(--surface);
+        box-shadow: var(--sh-3);
       }
       .option {
         display: block;
@@ -115,10 +132,12 @@ import { UiTag } from '../tag/tag';
         text-align: left;
         background: transparent;
         border: none;
-        padding: 4px 10px;
+        padding: 5px 8px;
+        border-radius: var(--r-sm);
         cursor: pointer;
+        transition: background 140ms var(--ease-out);
       }
-      .option:hover { background: var(--paper-200); }
+      .option:hover { background: var(--surface-2); }
       .close {
         margin-left: 4px;
         font-size: var(--fs-12);
@@ -127,6 +146,7 @@ import { UiTag } from '../tag/tag';
         color: var(--ink-500);
         cursor: pointer;
       }
+      .close:hover { color: var(--accent-700); }
     `,
   ],
 })

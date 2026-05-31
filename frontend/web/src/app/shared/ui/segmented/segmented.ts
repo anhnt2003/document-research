@@ -33,32 +33,36 @@ export interface SegmentOption<T extends string = string> {
       :host { display: block; }
       .segments {
         display: inline-flex;
-        border: 1px solid var(--rule-strong);
-        border-radius: var(--radius-sm);
-        background: var(--paper-50);
+        border: 1px solid var(--line);
+        border-radius: var(--r-pill);
+        background: var(--bg-2);
         padding: 3px;
-        gap: 0;
+        gap: 2px;
       }
       button {
         display: inline-flex;
         flex-direction: column;
         align-items: center;
-        padding: 8px 18px;
-        font-size: var(--fs-14);
-        font-weight: 500;
+        padding: 7px 16px;
+        font-size: var(--fs-13);
+        font-weight: 600;
         color: var(--ink-500);
-        border-radius: var(--radius-xs);
-        transition: background 140ms var(--ease-out), color 140ms var(--ease-out);
+        border-radius: var(--r-pill);
+        transition:
+          background 180ms var(--ease-out),
+          color 180ms var(--ease-out),
+          box-shadow 180ms var(--ease-out);
         line-height: 1.2;
       }
       button:hover { color: var(--ink-900); }
       button.is-active {
-        background: var(--ink-900);
-        color: var(--paper-50);
+        background: var(--surface);
+        color: var(--accent-700);
+        box-shadow: var(--sh-1);
       }
-      button.is-active .desc { color: var(--paper-200); }
+      button.is-active .desc { color: var(--accent); }
       .desc {
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         font-size: var(--fs-12);
         font-weight: 400;
         margin-top: 2px;

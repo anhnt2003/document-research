@@ -34,7 +34,6 @@ interface NavGroup {
           <span class="brand__sub">kho lưu trữ học thuật</span>
         </span>
       </a>
-      <span class="brand__version">v0.1 · α</span>
     </div>
 
     <nav class="nav" aria-label="Điều hướng chính">
@@ -64,7 +63,8 @@ interface NavGroup {
     </nav>
 
     <footer class="foot">
-      <span class="mono">© Đồ án K27 · HUBT</span>
+      <span class="ver-pill"><span class="ver-pill__dot" aria-hidden="true"></span> v0.1 · α</span>
+      <span class="copyfoot">© Đồ án K27 · HUBT</span>
     </footer>
   `,
   styles: [
@@ -73,148 +73,174 @@ interface NavGroup {
         display: flex;
         flex-direction: column;
         width: var(--shell-sidebar);
-        background: var(--paper-100);
-        border-right: 1px solid var(--rule);
+        padding: 22px 18px 18px;
+        background: var(--surface);
+        border-right: 1px solid var(--line);
+        box-shadow: var(--sh-1);
         height: 100vh;
         position: sticky;
         top: 0;
         overflow: hidden;
       }
       .brand {
-        padding: 22px 22px 18px;
-        border-bottom: 1px solid var(--rule);
+        padding: 6px 8px 18px;
       }
       .brand__link {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 13px;
         color: var(--ink-900);
         border-bottom: none;
+        min-width: 0;
       }
       .brand__link:hover { border-bottom: none; }
       .brand__mark {
-        width: 36px;
-        height: 36px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        width: 46px;
+        height: 46px;
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
         background: var(--ink-900);
-        color: var(--paper-50);
-        font-family: var(--font-display);
+        color: var(--bg);
+        font-family: var(--serif);
         font-style: italic;
-        font-weight: 500;
-        font-size: 22px;
-        border-radius: var(--radius-xs);
-        line-height: 1;
-      }
-      .brand__text { display: flex; flex-direction: column; line-height: 1.2; }
-      .brand__title {
-        font-family: var(--font-body);
         font-weight: 600;
-        font-size: var(--fs-15);
-        letter-spacing: -0.005em;
+        font-size: 26px;
+        border-radius: 14px;
+        line-height: 1;
+        box-shadow: var(--sh-2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+      .brand__mark::after {
+        content: '·';
+        color: var(--accent);
+        margin-left: 1px;
+      }
+      .brand__text {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        line-height: 1.2;
+        min-width: 0;
+      }
+      .brand__title {
+        font-family: var(--serif);
+        font-weight: 600;
+        font-size: 18px;
+        letter-spacing: -0.01em;
         color: var(--ink-900);
+        white-space: nowrap;
       }
-      .dot { color: var(--oxblood); }
+      .dot { color: var(--accent); }
       .brand__sub {
-        font-family: var(--font-mono);
-        font-size: 10.5px;
-        text-transform: uppercase;
-        letter-spacing: 0.18em;
-        color: var(--ink-500);
-        margin-top: 2px;
-      }
-      .brand__version {
-        display: block;
-        margin-top: 10px;
-        font-family: var(--font-mono);
-        font-size: var(--fs-12);
-        color: var(--ink-500);
-        letter-spacing: 0.06em;
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: 11px;
+        color: var(--ink-400);
       }
       .nav {
         flex: 1;
-        padding: 18px 12px;
+        margin: 0 -6px;
+        padding: 4px 6px;
         overflow-y: auto;
+        scrollbar-width: thin;
       }
-      .group + .group { margin-top: 22px; }
+      .nav::-webkit-scrollbar { width: 6px; }
+      .nav::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+      .group { margin-bottom: 18px; }
       .group__header {
         display: flex;
         align-items: baseline;
-        gap: 8px;
-        padding: 6px 12px 8px;
+        gap: 7px;
+        padding: 0 12px 8px;
       }
       .group__num {
-        font-family: var(--font-mono);
-        font-size: 10.5px;
-        color: var(--ink-300);
-        letter-spacing: 0.1em;
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--accent);
+        font-weight: 500;
+        letter-spacing: 0.16em;
       }
       .group__eyebrow {
-        font-family: var(--font-mono);
-        font-size: 10.5px;
+        font-family: var(--mono);
+        font-size: 10px;
         text-transform: uppercase;
-        letter-spacing: 0.2em;
-        color: var(--ink-500);
-        font-weight: 600;
+        letter-spacing: 0.16em;
+        color: var(--ink-400);
       }
       ul {
         display: flex;
         flex-direction: column;
-        gap: 1px;
+        gap: 2px;
       }
       a {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 8px 12px 8px 14px;
+        gap: 11px;
+        width: 100%;
+        padding: 9px 12px;
         color: var(--ink-700);
-        font-family: var(--font-body);
-        font-size: var(--fs-14);
+        font-family: var(--sans);
+        font-size: 14px;
         font-weight: 500;
-        border-radius: var(--radius-sm);
-        position: relative;
+        text-align: left;
+        border-radius: var(--r-sm);
         border-bottom: none;
-        transition: background 120ms var(--ease-out), color 120ms var(--ease-out);
+        transition: background 180ms var(--ease-out), color 180ms var(--ease-out),
+          transform 180ms var(--ease-out);
       }
       a:hover {
-        background: var(--paper-200);
+        background: var(--surface-2);
         color: var(--ink-900);
         border-bottom: none;
       }
+      a:hover .icon { color: var(--accent); }
       a.is-active {
-        color: var(--ink-900);
-        background: var(--paper-50);
+        color: var(--accent-700);
+        background: var(--accent-50);
         font-weight: 600;
       }
-      a.is-active::before {
-        content: '';
-        position: absolute;
-        left: -12px;
-        top: 8px;
-        bottom: 8px;
-        width: 2px;
-        background: var(--oxblood);
-      }
+      a.is-active .icon { color: var(--accent); }
       .icon {
         display: inline-flex;
-        width: 18px;
-        height: 18px;
+        width: 22px;
+        flex: 0 0 auto;
         align-items: center;
         justify-content: center;
-        font-size: 14px;
+        font-family: var(--serif);
+        font-size: 16px;
         color: var(--ink-400);
+        transition: color 180ms var(--ease-out);
       }
-      a.is-active .icon { color: var(--oxblood); }
       .foot {
-        padding: 14px 22px;
-        border-top: 1px solid var(--rule);
+        padding: 16px 12px 6px;
+        border-top: 1px solid var(--line-soft);
+        margin-top: 6px;
       }
-      .mono {
-        font-family: var(--font-mono);
-        font-size: var(--fs-12);
+      .ver-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 5px 11px;
+        background: var(--bg-2);
+        border-radius: var(--r-pill);
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--ink-500);
+        margin-bottom: 10px;
+      }
+      .ver-pill__dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 99px;
+        background: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-100);
+      }
+      .copyfoot {
+        display: block;
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: 11px;
         color: var(--ink-400);
-        letter-spacing: 0.08em;
       }
       @media (max-width: 960px) {
         :host {
@@ -225,7 +251,7 @@ interface NavGroup {
           width: min(320px, 86vw);
           transform: translateX(-100%);
           transition: transform 220ms var(--ease-out);
-          box-shadow: var(--shadow-md);
+          box-shadow: var(--sh-4);
         }
         :host(.is-open) { transform: translateX(0); }
       }

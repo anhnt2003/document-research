@@ -1,50 +1,98 @@
 /* ========================================================================
    document·research — global design system
-   Aesthetic: editorial / archive, light theme by default.
+   Aesthetic: "Reading Room" — warm, calm, premium. Soft shadows, large
+   rounded corners, generous whitespace. Light/warm theme.
+   Source of truth: design-explorations/03-reading-room.html
    ======================================================================== */
 
 /* ---------- design tokens ---------- */
 :root {
-  /* ink (text) — checked against paper-50:
-     ink-900..ink-500 pass AA (≥4.5:1) for normal body text;
-     ink-400 passes AA (≥4.5:1) — safe for small metadata;
-     ink-300 is ornament-only (fails AA, use for decorative glyphs/rules). */
-  --ink-900: #1a1714;
-  --ink-800: #2a221c;
-  --ink-700: #3a332c;
-  --ink-600: #524a40;
-  --ink-500: #5e544a;
-  --ink-400: #756a5d;
-  --ink-300: #a89e8f;
+  /* — Reading Room palette (native names) — */
+  --bg: #f4f0e8;
+  --bg-2: #efe9df;
+  --surface: #fffdf9;
+  --surface-2: #faf6ee;
 
-  /* paper (surface) */
-  --paper-50: #faf6ee;
-  --paper-75: #f6f1e6;
-  --paper-100: #f2ecdf;
-  --paper-200: #e8e0cc;
-  --paper-300: #ddd2b8;
+  --ink-900: #28251f;
+  --ink-700: #403a30;
+  --ink-500: #6f6757;
+  --ink-400: #938a78;
+  --ink-300: #b9b09c;
 
-  /* hairline rule */
-  --rule: #d4c8b0;
-  --rule-strong: #b8a98a;
+  --line: #e4dccc;
+  --line-soft: #ece5d6;
+  --line-strong: #d8cdb6;
 
-  /* accents */
-  --oxblood: #7a1f25;
-  --oxblood-soft: rgba(122, 31, 37, 0.08);
-  --oxblood-hover: #621820;
-  --amber: #b8742a;
-  --amber-soft: rgba(184, 116, 42, 0.16);
-  --moss: #4a6b3f;
-  --moss-soft: rgba(74, 107, 63, 0.14);
-  --rust: #a3492a;
-  --rust-soft: rgba(163, 73, 42, 0.14);
+  /* primary accent — teal */
+  --accent: #2f6f6a;
+  --accent-700: #245751;
+  --accent-100: #dde9e6;
+  --accent-50: #eaf2f0;
+
+  /* secondary accents */
+  --clay: #c06a4a;
+  --clay-100: #f2e0d8;
+  --sage: #5b7a5b;
+  --sage-100: #e1e9df;
+  --amber: #b07d2b;
+  --amber-100: #f0e6cf;
+
+  /* soft layered shadows */
+  --sh-1: 0 1px 2px rgba(40, 37, 31, 0.05), 0 1px 1px rgba(40, 37, 31, 0.04);
+  --sh-2: 0 2px 8px rgba(40, 37, 31, 0.06), 0 1px 3px rgba(40, 37, 31, 0.05);
+  --sh-3: 0 12px 28px -10px rgba(40, 37, 31, 0.16),
+    0 4px 10px -4px rgba(40, 37, 31, 0.08);
+  --sh-4: 0 30px 60px -20px rgba(40, 37, 31, 0.22),
+    0 10px 24px -12px rgba(40, 37, 31, 0.12);
+  --sh-accent: 0 14px 30px -12px rgba(47, 111, 106, 0.42);
+
+  /* radii — soft */
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+  --r-pill: 999px;
 
   /* typography */
-  --font-display: "Fraunces", "Newsreader", "Times New Roman", Georgia, serif;
-  --font-body: "Geist", "Söhne", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, Menlo, Consolas,
-    monospace;
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --sans: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+
+  /* ===== legacy aliases — keep old component code working, restyled =====
+     (existing components reference these names; remapped to Reading Room) */
+  --ink-800: #312c24;
+  --ink-600: #524a3d;
+
+  --paper-50: var(--bg);
+  --paper-75: var(--surface-2);
+  --paper-100: var(--surface-2);
+  --paper-200: var(--bg-2);
+  --paper-300: var(--line);
+
+  --rule: var(--line);
+  --rule-strong: var(--line-strong);
+
+  --oxblood: var(--accent);
+  --oxblood-soft: var(--accent-50);
+  --oxblood-hover: var(--accent-700);
+  --amber-soft: var(--amber-100);
+  --moss: var(--sage);
+  --moss-soft: var(--sage-100);
+  --rust: var(--clay);
+  --rust-soft: var(--clay-100);
+
+  --font-display: var(--serif);
+  --font-body: var(--sans);
+  --font-mono: var(--mono);
+
+  --radius-xs: 6px;
+  --radius-sm: var(--r-sm);
+  --radius-md: var(--r-md);
+  --radius-pill: var(--r-pill);
+
+  --shadow-sm: var(--sh-1);
+  --shadow-md: var(--sh-3);
+  --shadow-lg: var(--sh-4);
 
   /* type scale (modular 1.25) */
   --fs-12: 0.75rem;
@@ -75,23 +123,10 @@
   --sp-20: 80px;
   --sp-24: 96px;
 
-  /* radius (mostly hairline; small radii only) */
-  --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-pill: 999px;
-
-  /* shadows (sparingly — used for overlays) */
-  --shadow-sm: 0 1px 0 var(--rule);
-  --shadow-md: 0 8px 24px -8px rgba(26, 23, 20, 0.18),
-    0 1px 0 var(--rule);
-  --shadow-lg: 0 24px 60px -16px rgba(26, 23, 20, 0.28),
-    0 2px 0 var(--rule);
-
   /* layout */
-  --shell-sidebar: 248px;
-  --shell-topbar: 56px;
-  --content-max: 720px;
+  --shell-sidebar: 268px;
+  --shell-topbar: 60px;
+  --content-max: 760px;
   --content-wide: 1120px;
 
   /* motion */
@@ -114,25 +149,24 @@ body {
 }
 
 body {
-  font-family: var(--font-body);
+  font-family: var(--sans);
   font-size: var(--fs-15);
   line-height: 1.55;
   color: var(--ink-900);
-  background: var(--paper-50);
+  background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  font-feature-settings: "ss01", "ss02", "cv11";
   background-image:
-    radial-gradient(circle at 20% 0%, rgba(184, 116, 42, 0.04), transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(122, 31, 37, 0.03), transparent 60%);
+    radial-gradient(1200px 800px at 78% -8%, rgba(47, 111, 106, 0.06), transparent 60%),
+    radial-gradient(900px 700px at -6% 100%, rgba(192, 106, 74, 0.05), transparent 55%);
   background-attachment: fixed;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-variation-settings: "opsz" 36, "SOFT" 30;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-optical-sizing: auto;
   color: var(--ink-900);
   letter-spacing: -0.01em;
   line-height: 1.15;
@@ -152,12 +186,12 @@ p {
 }
 
 a {
-  color: var(--oxblood);
+  color: var(--accent);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: border-color 160ms var(--ease-out), color 160ms var(--ease-out);
 }
-a:hover { border-bottom-color: var(--oxblood); }
+a:hover { border-bottom-color: var(--accent); }
 
 button {
   font: inherit;
@@ -187,54 +221,53 @@ img {
 }
 
 mark {
-  background: var(--amber-soft);
+  background: var(--accent-100);
   color: var(--ink-900);
-  padding: 1px 2px;
+  padding: 1px 3px;
   border-radius: var(--radius-xs);
   font-weight: 500;
 }
 
 ::selection {
-  background: var(--oxblood);
-  color: var(--paper-50);
+  background: var(--accent-100);
+  color: var(--ink-900);
 }
 
-/* ---------- editorial primitives ---------- */
+/* ---------- reading-room primitives ---------- */
 .eyebrow {
-  font-family: var(--font-mono);
+  font-family: var(--mono);
   font-size: var(--fs-12);
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--ink-500);
+  letter-spacing: 0.16em;
+  color: var(--ink-400);
 }
 
 .display {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-variation-settings: "opsz" 96, "SOFT" 50;
-  letter-spacing: -0.025em;
-  line-height: 1.02;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-optical-sizing: auto;
+  letter-spacing: -0.02em;
+  line-height: 1.04;
 }
 
 .display--italic {
   font-style: italic;
-  font-variation-settings: "opsz" 96, "SOFT" 80;
 }
 
 .mono {
-  font-family: var(--font-mono);
+  font-family: var(--mono);
   font-size: var(--fs-12);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
   color: var(--ink-500);
 }
 
-.hairline { border-top: 1px solid var(--rule); }
-.hairline-bottom { border-bottom: 1px solid var(--rule); }
+.hairline { border-top: 1px solid var(--line); }
+.hairline-bottom { border-bottom: 1px solid var(--line); }
 
 .ornament {
   text-align: center;
-  font-family: var(--font-display);
+  font-family: var(--serif);
   font-style: italic;
   color: var(--ink-300);
   font-size: var(--fs-20);
@@ -247,14 +280,14 @@ mark {
   display: inline-block;
   width: 64px;
   height: 1px;
-  background: var(--rule);
+  background: var(--line);
   vertical-align: middle;
   margin: 0 var(--sp-4);
 }
 
 /* ---------- focus ring ---------- */
 :focus-visible {
-  outline: 2px solid var(--oxblood);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: var(--radius-xs);
 }
@@ -268,12 +301,12 @@ mark {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--rule);
-  border-radius: var(--radius-pill);
-  border: 2px solid var(--paper-50);
+  background: var(--line);
+  border-radius: var(--r-pill);
+  border: 2px solid var(--bg);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--rule-strong);
+  background: var(--line-strong);
 }
 
 /* ---------- motion preference ---------- */
@@ -305,6 +338,6 @@ mark {
 /* ---------- CDK overlay base ---------- */
 .cdk-overlay-container { z-index: 1000; }
 .cdk-overlay-dark-backdrop {
-  background: rgba(26, 23, 20, 0.46);
+  background: rgba(40, 37, 31, 0.42);
   backdrop-filter: blur(2px);
 }

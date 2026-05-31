@@ -43,50 +43,67 @@ import { formatDateTime } from '../../core/util/date';
     `
       :host { display: block; }
       .center { text-align: center; padding: 48px 0; color: var(--ink-400); }
-      .log { display: flex; flex-direction: column; }
+      .log {
+        display: flex;
+        flex-direction: column;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-2);
+        padding: 8px clamp(18px, 3vw, 28px);
+      }
       .evt {
         display: grid;
         grid-template-columns: 180px 12px 1fr;
         gap: 16px;
-        padding: 14px 0;
+        padding: 18px 0;
         align-items: baseline;
-        border-bottom: 1px solid var(--rule);
+        border-bottom: 1px solid var(--line-soft);
+        position: relative;
       }
+      .evt:last-child { border-bottom: none; }
       .when {
-        color: var(--ink-500);
+        color: var(--ink-400);
+        font-family: var(--mono);
         font-size: var(--fs-12);
         letter-spacing: 0.04em;
       }
       .rail {
         width: 2px;
-        background: var(--rule);
-        height: 32px;
-        margin: -10px 0;
+        background: var(--line);
+        height: 40px;
+        margin: -12px 0;
         justify-self: center;
         position: relative;
       }
       .rail::before {
         content: '';
         position: absolute;
-        top: 8px;
+        top: 10px;
         left: -3px;
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: var(--oxblood);
-        border: 2px solid var(--paper-50);
+        background: var(--accent);
+        border: 2px solid var(--surface);
+        box-shadow: 0 0 0 3px var(--accent-100);
       }
       .action {
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-style: italic;
         font-size: var(--fs-18);
         color: var(--ink-900);
       }
       .target {
-        display: block;
-        margin-top: 4px;
-        font-size: var(--fs-13);
+        display: inline-block;
+        margin-top: 6px;
+        padding: 3px 11px;
+        font-family: var(--mono);
+        font-size: var(--fs-12);
         color: var(--ink-500);
+        background: var(--surface-2);
+        border: 1px solid var(--line-soft);
+        border-radius: var(--r-pill);
       }
       @media (max-width: 720px) {
         .evt { grid-template-columns: 1fr; gap: 4px; }

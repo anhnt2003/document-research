@@ -112,9 +112,16 @@ import { formatDateLong } from '../../../core/util/date';
       :host { display: block; }
       .grid {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 280px;
-        gap: 56px;
+        grid-template-columns: minmax(0, 1fr) 300px;
+        gap: 28px;
         align-items: flex-start;
+      }
+      .main {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-2);
+        padding: clamp(24px, 3vw, 34px);
       }
       .avatar-row {
         display: flex;
@@ -122,17 +129,19 @@ import { formatDateLong } from '../../../core/util/date';
         align-items: center;
         padding-bottom: 24px;
         margin-bottom: 24px;
-        border-bottom: 1px solid var(--rule);
+        border-bottom: 1px solid var(--line-soft);
       }
       .avatar-row h2 {
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-size: var(--fs-30);
-        font-style: italic;
+        font-weight: 500;
         font-variation-settings: 'opsz' 48, 'SOFT' 70;
+        letter-spacing: -0.015em;
         margin: 0 0 4px;
       }
       .avatar-row .mono {
         color: var(--ink-500);
+        font-family: var(--mono);
         font-size: var(--fs-13);
         margin-bottom: 8px;
       }
@@ -143,8 +152,8 @@ import { formatDateLong } from '../../../core/util/date';
         margin-bottom: 32px;
       }
       .block__title {
-        font-family: var(--font-display);
-        font-style: italic;
+        font-family: var(--serif);
+        font-weight: 600;
         font-size: var(--fs-24);
         font-variation-settings: 'opsz' 36, 'SOFT' 80;
         margin: 0 0 6px;
@@ -158,52 +167,63 @@ import { formatDateLong } from '../../../core/util/date';
       .role {
         display: flex;
         gap: 12px;
-        padding: 14px;
-        border: 1px solid var(--rule);
-        background: var(--paper-50);
+        padding: 16px;
+        border: 1px solid var(--line);
+        background: var(--surface-2);
         cursor: pointer;
-        border-radius: var(--radius-sm);
-        transition: border-color 140ms var(--ease-out), background 140ms var(--ease-out);
+        border-radius: var(--r-md);
+        box-shadow: var(--sh-1);
+        transition: border-color 160ms var(--ease-out), background 160ms var(--ease-out), box-shadow 200ms var(--ease-out);
       }
-      .role:hover { border-color: var(--ink-700); }
-      .role input { margin-top: 4px; accent-color: var(--oxblood); }
+      .role:hover { border-color: var(--accent-100); box-shadow: var(--sh-2); }
+      .role:has(input:checked) { border-color: var(--accent); background: var(--accent-50); }
+      .role input { margin-top: 4px; accent-color: var(--accent); }
       .role__name {
         display: block;
-        font-family: var(--font-display);
-        font-style: italic;
+        font-family: var(--serif);
+        font-weight: 600;
         font-size: var(--fs-16);
         color: var(--ink-900);
       }
       .role__desc {
         display: block;
         font-size: var(--fs-13);
-        color: var(--ink-600);
+        color: var(--ink-500);
         margin-top: 2px;
       }
       .role__count {
         display: block;
         margin-top: 6px;
+        font-family: var(--mono);
         font-size: var(--fs-12);
         color: var(--ink-400);
+      }
+      .aside {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-2);
+        padding: clamp(22px, 3vw, 28px);
       }
       .aside section {
         display: flex;
         flex-direction: column;
         gap: 6px;
         padding-bottom: 16px;
-        border-bottom: 1px solid var(--rule);
+        border-bottom: 1px solid var(--line-soft);
         margin-bottom: 16px;
       }
+      .aside section:last-child { padding-bottom: 0; margin-bottom: 0; border-bottom: none; }
       .label {
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         font-size: 10.5px;
         text-transform: uppercase;
         letter-spacing: 0.18em;
-        color: var(--ink-500);
+        color: var(--accent-700);
       }
       .aside section > span:last-child {
         font-size: var(--fs-14);
-        color: var(--ink-800);
+        color: var(--ink-700);
       }
       .tags { display: flex; flex-wrap: wrap; gap: 6px; }
       .center { text-align: center; padding: 80px 0; color: var(--ink-400); }

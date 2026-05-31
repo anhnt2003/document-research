@@ -53,16 +53,28 @@ import { UiInput } from '../../../shared/ui/input/input';
         flex-direction: column;
         gap: 22px;
         max-width: 560px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-2);
+        padding: clamp(26px, 4vw, 38px);
       }
       .select {
         font: inherit;
-        padding: 8px 12px;
-        border: 1px solid var(--rule-strong);
-        background: var(--paper-50);
-        border-radius: var(--radius-sm);
+        padding: 11px 38px 11px 15px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        box-shadow: var(--sh-1);
+        border-radius: var(--r-md);
         width: 100%;
+        color: var(--ink-700);
+        -webkit-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4l4 4 4-4' stroke='%236f6757' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
       }
-      .actions { margin-top: 16px; }
+      .actions { margin-top: 8px; }
     `,
   ],
 })

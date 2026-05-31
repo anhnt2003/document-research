@@ -26,15 +26,15 @@ import { makeInitials, pickAccent } from '../../../core/util/signature';
         align-items: center;
         justify-content: center;
         border-radius: 50%;
-        border: 1px solid var(--paper-50);
-        box-shadow: 0 0 0 1px var(--rule);
+        border: 1px solid var(--surface);
+        box-shadow: var(--sh-1), 0 0 0 1px var(--line);
       }
       .initials {
-        color: var(--paper-50);
-        font-family: var(--font-mono);
-        font-size: calc(var(--size, 32px) * 0.34);
+        color: var(--bg);
+        font-family: var(--serif);
+        font-size: calc(var(--size, 32px) * 0.4);
         font-weight: 600;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.01em;
         text-transform: uppercase;
       }
       .photo { object-fit: cover; }

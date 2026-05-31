@@ -11,8 +11,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 14px 0;
-        border-bottom: 1px solid var(--rule);
+        padding: 14px 18px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-2);
         margin-bottom: 24px;
         flex-wrap: wrap;
       }

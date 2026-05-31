@@ -37,7 +37,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         align-items: baseline;
         justify-content: space-between;
         gap: 12px;
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         font-size: var(--fs-12);
         text-transform: uppercase;
         letter-spacing: 0.16em;
@@ -46,7 +46,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
       .label__hint {
         text-transform: none;
         letter-spacing: 0;
-        font-family: var(--font-body);
+        font-family: var(--sans);
         font-size: var(--fs-13);
         color: var(--ink-400);
       }
@@ -55,7 +55,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
       }
       .error {
         font-size: var(--fs-13);
-        color: var(--oxblood);
+        color: var(--clay);
         font-style: italic;
       }
     `,

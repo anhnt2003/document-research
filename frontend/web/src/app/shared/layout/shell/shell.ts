@@ -49,21 +49,22 @@ import { UiToastContainer } from '../../ui/toast/toast-container';
       }
       .content {
         flex: 1;
-        padding: 0 40px 80px;
-        max-width: 1280px;
+        padding: 34px 28px 56px;
+        max-width: var(--maxw, 1340px);
         width: 100%;
+        margin: 0 auto;
       }
       .backdrop {
         display: none;
         position: fixed;
         inset: 0;
         z-index: 40;
-        background: rgba(20, 14, 8, 0.42);
+        background: rgba(40, 37, 31, 0.4);
         backdrop-filter: blur(2px);
         border: none;
         cursor: pointer;
         opacity: 0;
-        transition: opacity 200ms var(--ease-out);
+        transition: opacity 250ms var(--ease-out);
         pointer-events: none;
       }
       @media (max-width: 960px) {
@@ -75,7 +76,7 @@ import { UiToastContainer } from '../../ui/toast/toast-container';
         }
       }
       @media (max-width: 720px) {
-        .content { padding: 0 20px 60px; }
+        .content { padding: 24px 16px 48px; }
       }
     `,
   ],

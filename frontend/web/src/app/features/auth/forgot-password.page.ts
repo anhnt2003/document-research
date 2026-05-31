@@ -56,8 +56,9 @@ import { UiInput } from '../../shared/ui/input/input';
         display: block;
         min-height: 100vh;
         background:
-          radial-gradient(800px 500px at 50% 0%, rgba(184, 116, 42, 0.06), transparent 70%),
-          var(--paper-50);
+          radial-gradient(1000px 640px at 50% -6%, rgba(47, 111, 106, 0.07), transparent 62%),
+          radial-gradient(820px 560px at 50% 120%, rgba(192, 106, 74, 0.05), transparent 58%),
+          var(--bg);
       }
       .page {
         display: flex;
@@ -69,23 +70,25 @@ import { UiInput } from '../../shared/ui/input/input';
       .card {
         max-width: 480px;
         width: 100%;
-        background: var(--paper-50);
-        padding: 48px;
-        border: 1px solid var(--rule);
+        background: var(--surface);
+        padding: clamp(36px, 6vw, 52px);
+        border: 1px solid var(--line);
+        border-radius: var(--r-xl);
+        box-shadow: var(--sh-3);
       }
       .eyebrow {
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         font-size: var(--fs-12);
         text-transform: uppercase;
         letter-spacing: 0.22em;
-        color: var(--ink-500);
+        color: var(--accent-700);
         display: block;
         margin-bottom: 16px;
       }
       h1 {
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-size: var(--fs-48);
-        font-weight: 400;
+        font-weight: 500;
         font-variation-settings: 'opsz' 96, 'SOFT' 60;
         letter-spacing: -0.025em;
         line-height: 1.04;
@@ -93,33 +96,37 @@ import { UiInput } from '../../shared/ui/input/input';
       }
       h1 em {
         font-style: italic;
-        color: var(--oxblood);
+        color: var(--accent);
       }
-      .lede { color: var(--ink-600); margin-bottom: 28px; line-height: 1.55; }
+      .lede { color: var(--ink-500); margin-bottom: 28px; line-height: 1.6; }
       .form { display: flex; flex-direction: column; gap: 20px; }
       .ok {
         display: flex;
         gap: 16px;
         align-items: flex-start;
-        padding: 20px;
-        background: var(--moss-soft);
-        border-left: 2px solid var(--moss);
+        padding: 20px 22px;
+        background: var(--sage-100);
+        border: 1px solid transparent;
+        border-radius: var(--r-md);
+        box-shadow: var(--sh-1);
       }
       .ok__glyph {
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-style: italic;
-        color: var(--moss);
-        font-size: 32px;
+        color: var(--sage);
+        font-size: 34px;
         line-height: 1;
       }
-      .ok p { color: var(--ink-700); line-height: 1.5; }
+      .ok p { color: var(--ink-700); line-height: 1.55; }
       .back {
         display: inline-block;
         margin-top: 28px;
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-style: italic;
         color: var(--ink-500);
+        border-bottom: none;
       }
+      .back:hover { color: var(--accent-700); border-bottom: none; }
     `,
   ],
 })

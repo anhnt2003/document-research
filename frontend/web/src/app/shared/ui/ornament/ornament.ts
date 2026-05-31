@@ -13,20 +13,21 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         justify-content: center;
         gap: 16px;
         padding: 24px 0;
-        color: var(--ink-300);
+        color: var(--accent);
       }
       :host::before,
       :host::after {
         content: '';
         flex: 1;
         height: 1px;
-        background: var(--rule);
+        background: var(--line);
         max-width: 96px;
       }
       .glyph {
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-style: italic;
         font-size: var(--fs-20);
+        opacity: 0.55;
       }
     `,
   ],

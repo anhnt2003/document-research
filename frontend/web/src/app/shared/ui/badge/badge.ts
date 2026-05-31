@@ -13,22 +13,23 @@ type BadgeTone = 'neutral' | 'moss' | 'amber' | 'rust' | 'oxblood' | 'ink';
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 2px 8px;
-        font-family: var(--font-mono);
+        padding: 3px 11px;
+        font-family: var(--mono);
         font-size: var(--fs-12);
         text-transform: uppercase;
         letter-spacing: 0.12em;
         font-weight: 500;
-        border-radius: var(--radius-xs);
-        background: var(--paper-100);
+        border-radius: var(--r-pill);
+        background: var(--surface-2);
         color: var(--ink-700);
-        line-height: 1.6;
+        border: 1px solid var(--line-soft);
+        line-height: 1.5;
       }
-      :host[tone='moss'] { background: var(--moss-soft); color: var(--moss); }
-      :host[tone='amber'] { background: var(--amber-soft); color: var(--amber); }
-      :host[tone='rust'] { background: var(--rust-soft); color: var(--rust); }
-      :host[tone='oxblood'] { background: var(--oxblood-soft); color: var(--oxblood); }
-      :host[tone='ink'] { background: var(--ink-900); color: var(--paper-50); }
+      :host[tone='moss'] { background: var(--sage-100); color: #3c533c; border-color: transparent; }
+      :host[tone='amber'] { background: var(--amber-100); color: #7a5510; border-color: transparent; }
+      :host[tone='rust'] { background: var(--clay-100); color: #7a3c25; border-color: transparent; }
+      :host[tone='oxblood'] { background: var(--accent-50); color: var(--accent-700); border-color: transparent; }
+      :host[tone='ink'] { background: var(--ink-900); color: var(--bg-2); border-color: transparent; }
     `,
   ],
   host: { '[attr.tone]': 'tone' },

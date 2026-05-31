@@ -102,27 +102,41 @@ interface PermissionGroup {
         display: grid;
         grid-template-columns: 1fr 2fr;
         gap: 20px;
-        margin-bottom: 36px;
+        margin-bottom: 28px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-2);
+        padding: clamp(20px, 3vw, 28px);
+      }
+      .matrix {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-2);
+        padding: clamp(22px, 3vw, 30px);
       }
       .matrix__head {
         display: flex;
         justify-content: space-between;
         align-items: baseline;
         padding-bottom: 16px;
-        border-bottom: 1px solid var(--rule);
+        border-bottom: 1px solid var(--line);
       }
       .matrix__head .eyebrow {
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         font-size: var(--fs-12);
         text-transform: uppercase;
         letter-spacing: 0.2em;
-        color: var(--ink-500);
+        color: var(--accent-700);
       }
       .counts {
+        font-family: var(--mono);
         font-size: var(--fs-12);
         color: var(--ink-500);
       }
-      .group { padding: 22px 0; border-bottom: 1px solid var(--rule); }
+      .group { padding: 22px 0; border-bottom: 1px solid var(--line-soft); }
+      .group:last-child { border-bottom: none; padding-bottom: 0; }
       .group__head {
         display: flex;
         justify-content: space-between;
@@ -130,51 +144,58 @@ interface PermissionGroup {
         margin-bottom: 14px;
       }
       .group h3 {
-        font-family: var(--font-display);
-        font-style: italic;
+        font-family: var(--serif);
+        font-weight: 600;
         font-size: var(--fs-24);
         font-variation-settings: 'opsz' 36, 'SOFT' 80;
+        letter-spacing: -0.01em;
         margin: 0;
       }
       .select-all {
         font-size: var(--fs-12);
-        color: var(--oxblood);
+        color: var(--accent);
         cursor: pointer;
         letter-spacing: 0.06em;
-        font-family: var(--font-mono);
+        font-family: var(--mono);
         background: none;
+        padding: 5px 12px;
+        border-radius: var(--r-pill);
+        transition: background 160ms var(--ease-out), color 160ms var(--ease-out);
       }
-      .select-all:hover { color: var(--oxblood-hover); }
+      .select-all:hover { color: var(--accent-700); background: var(--accent-50); }
       .group ul {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 8px;
+        gap: 10px;
       }
       .group li label {
         display: flex;
         align-items: flex-start;
         gap: 12px;
-        padding: 12px 14px;
-        background: var(--paper-50);
-        border: 1px solid var(--rule);
-        border-radius: var(--radius-sm);
+        padding: 14px 16px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: var(--r-md);
+        box-shadow: var(--sh-1);
         cursor: pointer;
-        transition: border-color 140ms var(--ease-out), background 140ms var(--ease-out);
+        transition: border-color 160ms var(--ease-out), background 160ms var(--ease-out), box-shadow 200ms var(--ease-out);
       }
-      .group li label:hover { border-color: var(--ink-700); }
-      .group li input { margin-top: 4px; accent-color: var(--oxblood); }
+      .group li label:hover { border-color: var(--accent-100); box-shadow: var(--sh-2); }
+      .group li label:has(input:checked) { border-color: var(--accent); background: var(--accent-50); }
+      .group li input { margin-top: 4px; accent-color: var(--accent); }
       .perm__label {
-        font-family: var(--font-display);
+        font-family: var(--serif);
+        font-weight: 600;
         font-size: var(--fs-15);
         color: var(--ink-900);
-        font-style: italic;
       }
       .perm__key {
         display: block;
+        font-family: var(--mono);
         font-size: var(--fs-12);
-        color: var(--oxblood);
-        margin-top: 2px;
-        letter-spacing: 0.06em;
+        color: var(--accent-700);
+        margin-top: 3px;
+        letter-spacing: 0.04em;
       }
       .perm__desc {
         display: block;
@@ -183,17 +204,19 @@ interface PermissionGroup {
         margin-top: 6px;
       }
       .saved-hint {
-        margin-top: 24px;
-        padding: 14px 16px;
-        background: var(--moss-soft);
-        border-left: 2px solid var(--moss);
-        color: var(--ink-800);
+        margin-top: 22px;
+        padding: 16px 18px;
+        background: var(--sage-100);
+        border: 1px solid transparent;
+        border-radius: var(--r-md);
+        box-shadow: var(--sh-1);
+        color: var(--ink-700);
         font-size: var(--fs-14);
       }
       .saved-hint .mark {
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-style: italic;
-        color: var(--moss);
+        color: var(--sage);
         margin-right: 6px;
       }
       .center { text-align: center; padding: 80px 0; color: var(--ink-400); }

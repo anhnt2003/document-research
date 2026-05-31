@@ -58,42 +58,48 @@ import { UiBadge } from '../../../shared/ui/badge/badge';
       .center { text-align: center; padding: 48px 0; color: var(--ink-400); }
       .grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 18px;
       }
       .card {
         display: block;
-        padding: 22px;
-        background: var(--paper-50);
-        border: 1px solid var(--rule);
+        padding: 24px 26px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--r-lg);
+        box-shadow: var(--sh-2);
         color: inherit;
         text-decoration: none;
-        transition: border-color 160ms var(--ease-out), transform 160ms var(--ease-out);
+        transition: box-shadow 220ms var(--ease-out), transform 180ms var(--ease-out), border-color 180ms var(--ease-out);
       }
       .card:hover {
-        border-color: var(--ink-700);
-        transform: translateY(-1px);
-        border-bottom: 1px solid var(--ink-700);
+        border-color: var(--accent-100);
+        transform: translateY(-3px);
+        box-shadow: var(--sh-3);
+        border-bottom: 1px solid var(--accent-100);
       }
       .card__head {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        gap: 12px;
         margin-bottom: 12px;
       }
       .card h3 {
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-size: var(--fs-24);
-        font-weight: 400;
-        font-style: italic;
+        font-weight: 600;
         font-variation-settings: 'opsz' 36, 'SOFT' 80;
+        letter-spacing: -0.01em;
         margin: 0;
         color: var(--ink-900);
+        transition: color 160ms var(--ease-out);
       }
+      .card:hover h3 { color: var(--accent); }
       .desc {
-        color: var(--ink-600);
+        color: var(--ink-500);
         font-size: var(--fs-14);
-        line-height: 1.5;
+        line-height: 1.55;
         margin-bottom: 18px;
       }
       .card__foot {
@@ -102,20 +108,20 @@ import { UiBadge } from '../../../shared/ui/badge/badge';
         gap: 8px;
         flex-wrap: wrap;
         padding-top: 14px;
-        border-top: 1px solid var(--rule);
+        border-top: 1px solid var(--line-soft);
         font-size: var(--fs-12);
       }
       .mono {
-        font-family: var(--font-mono);
-        color: var(--ink-500);
+        font-family: var(--mono);
+        color: var(--ink-400);
         letter-spacing: 0.06em;
       }
       .dot { color: var(--ink-300); }
       .link {
         margin-left: auto;
-        font-family: var(--font-display);
+        font-family: var(--serif);
         font-style: italic;
-        color: var(--oxblood);
+        color: var(--accent);
         font-size: var(--fs-14);
       }
     `,
